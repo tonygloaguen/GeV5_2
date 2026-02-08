@@ -1,0 +1,83 @@
+
+---
+
+# 2️⃣ `.gitignore` professionnel (monorepo Python industriel)
+
+```gitignore
+# =====================
+# Python
+# =====================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# =====================
+# Logs & runtime
+# =====================
+*.log
+logs/
+tmp/
+.cache/
+
+# =====================
+# Bases de données / données runtime
+# =====================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# =====================
+# Modèles ML / poids
+# =====================
+*.pt
+*.onnx
+*.h5
+
+# =====================
+# OS / IDE
+# =====================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# =====================
+# Sécurité
+# =====================
+.env
+.env.*
+*.key
+*.pem
+
+# =====================
+# Archives
+# =====================
+*.zip
+*.tar
+*.gz
+*.7z
+
+# =====================
+# Build / dist
+# =====================
+build/
+dist/
+
+# =====================
+# Spécifique projet
+# =====================
+static/version.txt
