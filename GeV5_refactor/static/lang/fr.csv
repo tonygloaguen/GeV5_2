@@ -1,0 +1,178 @@
+key,value
+camera_settings_title,Paramètres Caméra - GammaScan eV5
+camera_settings_title,Paramètres Caméra
+rtsp_stream,Flux RTSP:
+camera_ip,Adresse IP Caméra:
+save_button,Sauvegarder
+back_button,Retour
+communication_settings_title,Paramètres de Communication - GammaScan eV5
+communication_settings_title,Paramètres de Communication
+camera,Caméra:
+modbus,Modbus:
+evx,eVx:
+sms_module,Module SMS:
+save_button,Sauvegarder
+back_button,Retour
+email_settings_title,Paramètres Email - GammaScan eV5
+email_settings_title,Paramètres Email
+smtp_server,Serveur SMTP:
+port,Port SMTP:
+login,Login SMTP:
+password,Mot de passe SMTP:
+sender_address,Adresse émetteur:
+recipients,Destinataires (séparés par des virgules)::
+save_button,Sauvegarder
+back_button,Retour
+general_settings_title,Paramètres Généraux - GammaScan eV5
+general_settings_title,Paramètres Généraux
+portico_name,Nom du portique:
+sample_time,Temps d'échantillonnage (s):
+distance_between_cells,Distance entre les cellules (m):
+mode_without_cells,Mode sans cellules:
+follower_threshold_factor,Facteur multiple seuil suiveur:
+threshold_2,Seuil 2:
+min_bdf_threshold,Seuil mini BDF:
+max_bdf_threshold,Seuil maxi BDF:
+next_maintenance_date,Date de la prochaine visite de maintenance:
+save_button,Sauvegarder
+back_button,Retour
+login_title,Connexion
+login_title,Connexion
+username,Nom d'utilisateur:
+password,Mot de passe:
+login_button,Connexion
+back_button,Retour
+manage_users_title,Gestion des Utilisateurs
+manage_users_title,Gestion des Utilisateurs
+add_user,Ajouter un utilisateur
+username,Nom d'utilisateur:
+password,Mot de passe:
+access_level,Niveau d'accès:
+user,Utilisateur
+admin,Administrateur
+add_button,Ajouter
+back_button,Retour
+existing_users,Utilisateurs existants
+delete_button,Effacer
+simulation_mode_title,Mode Simulation - GammaScan eV5
+simulation_mode_title,Mode Simulation
+SIM,SIM:
+save_button,Sauvegarder
+back_button,Retour
+network_settings_title,Configuration Réseau
+network_settings_title,Configuration Réseau
+configure_static_ip,Configurer une adresse IP statique
+interface,Interface:
+ip_address,Adresse IP:
+netmask,Masque de sous-réseau:
+gateway,Passerelle:
+configure_static_ip_button,Configurer IP statique
+configure_dhcp,Configurer l'interface pour utiliser DHCP
+interface,Interface:
+configure_dhcp_button,Configurer DHCP
+configure_dns,Configurer les serveurs DNS
+dns_servers,Serveurs DNS (séparés par des virgules):
+configure_dns_button,Configurer DNS
+back_button,Retour
+remote_settings_title,Paramètres Remote - GammaScan eV5
+remote_settings_title,Paramètres Remote
+remote_unit_ip,Adresse IP de l'unité remote:
+second_remote_unit_ip,Adresse IP de la deuxième unité remote:
+save_button,Sauvegarder
+back_button,Retour
+sms_settings_title,Paramètres SMS - GammaScan eV5
+sms_settings_title,Paramètres SMS
+phone_numbers,Numéros de téléphone (séparés par des virgules):
+save_button,Sauvegarder
+back_button,Retour
+settings,Paramètres
+general_settings,Paramètres Généraux
+lanes_settings,Voies
+remote_settings,Remote
+camera_settings,Caméra
+email_settings,Email
+sms_settings,SMS
+communication_settings,Communication
+advanced_settings,Paramètres Avancés
+manage_users,Gestion des Utilisateurs
+lanes_gpio,Voies GPIO
+simulation_mode,Mode Simulation
+network_settings,Réglage Réseau
+maj_ntp,MAJ du Serveur NTP
+restart_portico,Redémarrage du Portique
+utilities,Utilitaires
+view_data,Visualisation des données de passage
+start_rustdesk,Lancer Remote ctrl via Internet
+acknowledgement,Acquittement
+language,Language
+logout,Déconnexion
+full_screen,Mode supervision
+control_message,Nombre de jours avant contrôle
+values_alarms,Valeurs et Alarmes/Défauts
+channel,Channel
+count,Comptage
+follower,Suiveur
+max_value,Valeur Max
+alarm,Alarme
+source_presence,Anomalie Bdf
+fault,Défaut
+measure_state,Etat mesure
+cell_1,Cellule 1
+cell_2,Cellule 2
+speed,Vitesse
+measure_state,Etat Mesure
+mode_no_cells,Mode Sans Cellules
+realtime_graph,Graphique en Temps Réel
+cells_open_20_minutes,Cellules ouvertes depuis 15 minutes et acquittable
+radioactive_alarm,Alarme radioactive. Veuillez dégager le chargement et acquitter l'alarme pour pouvoir fermer cette fenêtre
+open_waste_management_procedure,Ouvrir la procédure de gestion
+data_visualization_title,Visualisation des Données
+data_visualization_title,Visualisation des Données
+start_date,Date de début :
+end_date,Date de fin :
+filter_alarms,Afficher uniquement les lignes avec des alarmes :
+export_csv,Export CSV
+back_button,Retour
+gpio_settings_title,Paramètres GPIO - GammaScan eV5
+gpio_settings_title,Paramètres GPIO
+pin_1,PIN 1:
+pin_2,PIN 2:
+pin_3,PIN 3:
+pin_4,PIN 4:
+save_button,Sauvegarder
+back_button,Retour
+lane_settings_title,Paramètres des Voies - GammaScan eV5
+lane_settings_title,Paramètres des Voies
+detector_1_on,Détecteur 1 (ON/OFF):
+detector_2_on,Détecteur 2 (ON/OFF):
+detector_3_on,Détecteur 3 (ON/OFF):
+detector_4_on,Détecteur 4 (ON/OFF):
+detector_5_on,Détecteur 5 (ON/OFF):
+detector_6_on,Détecteur 6 (ON/OFF):
+detector_7_on,Détecteur 7 (ON/OFF):
+detector_8_on,Détecteur 8 (ON/OFF):
+detector_9_on,Détecteur 9 (ON/OFF):
+detector_10_on,Détecteur 10 (ON/OFF):
+detector_11_on,Détecteur 11 (ON/OFF):
+detector_12_on,Détecteur 12 (ON/OFF):
+detector_1_name,Nom Détecteur 1:
+detector_2_name,Nom Détecteur 2:
+detector_3_name,Nom Détecteur 3:
+detector_4_name,Nom Détecteur 4:
+detector_5_name,Nom Détecteur 5:
+detector_6_name,Nom Détecteur 6:
+detector_7_name,Nom Détecteur 7:
+detector_8_name,Nom Détecteur 8:
+detector_9_name,Nom Détecteur 9:
+detector_10_name,Nom Détecteur 10:
+detector_11_name,Nom Détecteur 11:
+detector_12_name,Nom Détecteur 12:
+save_button,Sauvegarder
+back_button,Retour
+new_ntp_server_label,Serveur NTP
+update_button,Mettre à Jour
+back_button,Retour
+test_smtp,Test SMTP
+maj_ntp,MAJ du Serveur NTP
+Follow block,Blocage seuil suiveur
+refresh_button,Rafraichir les données

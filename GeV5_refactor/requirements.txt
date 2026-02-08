@@ -1,0 +1,12 @@
+flask
+requests
+numpy
+matplotlib
+pyserial
+websocket-client
+waitress
+Werkzeug
+RPi.GPIO
+fastapi
+uvicorn
+reportlab

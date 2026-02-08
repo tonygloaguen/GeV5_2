@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GammaScan eV5 - {{ nom_portique }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chartjs-adapter-moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <div class="navbar">
+        <div class="dropdown">
+            <button class="dropbtn" data-translate-key="settings">Paramètres
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('general_params') }}" data-translate-key="general_settings">Paramètres Généraux</a>
+                <a href="{{ url_for('voies_params') }}" data-translate-key="lanes_settings">Paramètres des Voies</a>
+                <a href="{{ url_for('remote_params') }}" data-translate-key="remote_settings">Paramètres du Remote</a>
+                <a href="{{ url_for('camera_params') }}" data-translate-key="camera_settings">Paramètres Caméra</a>
+                <a href="{{ url_for('email_params') }}" data-translate-key="email_settings">Paramètres Email</a>
+                <a href="{{ url_for('sms_params') }}" data-translate-key="sms_settings">Paramètres SMS</a>
+                <a href="{{ url_for('communication_params') }}" data-translate-key="communication_settings"><br>Paramètres de Communication</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn" data-translate-key="advanced_settings">Paramètres Avancés
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('manage_users') }}" data-translate-key="manage_users">Gestion des Utilisateurs</a>
+                <a href="{{ url_for('voies_gpio_params') }}" data-translate-key="lanes_gpio">Voies GPIO</a>
+                <a href="{{ url_for('mode_simulation') }}" data-translate-key="simulation_mode">Mode Simulation</a>
+                <a href="{{ url_for('network') }}" data-translate-key="network_settings">Réglage Réseau</a>
+                <a href="{{ url_for('maj_ntp') }}" data-translate-key="maj_ntp">MAJ du Serveur NTP</a>
+                
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn" data-translate-key="utilities">Utilitaires
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('view_data') }}" data-translate-key="view_data">Visualisation des données de passage</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn" data-translate-key="misc">Misc
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('start_anydesk') }}" data-translate-key="start_rustdesk">Lancer Remote Ctrl via Internet</a>
+                <a href="{{ url_for('test_smtp') }}" data-translate-key="test_smtp">Test SMTP</a> <!-- Nouvelle entrée pour le test SMTP-->
+                <a href="{{ url_for('test_io') }}" data-translate-key="tests_io">Tests IO</a>
+                <a href="{{ url_for('control_camera') }}" data-translate-key="control_camera" onclick="openControlCameraWindow(event)">Contrôle caméra</a>
+                <a href="{{ url_for('restart_gev5_moteur') }}" data-translate-key="restart_portico">Redémarrage du Portique</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn" data-translate-key="language">Language 
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" onclick="changeLanguage('fr')">Français</a>
+                <a href="#" onclick="changeLanguage('en')">English</a>
+                <a href="#" onclick="changeLanguage('es')">Español</a>
+                <a href="#" onclick="changeLanguage('pt')">Portugués</a>
+            </div>
+        </div>
+        <a href="{{ url_for('logout') }}" data-translate-key="logout">Déconnexion</a>
+		<button id="close-btn" class="close-btn" data-translate-key="close_screen">Fermer l'IHM</button>
+		<div class="version-display">
+            <span>GammaScan eV5 - {{ nom_portique }} Version: {{ version }} - <span id="current-datetime">{{ current_datetime }}</span>
+        </div>
+
+    </div>
+
+    <div style="display: flex; align-items: center;">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height: 40px; margin-right: 10px;">
+        <h2 id="controle-message" class="{{ 'text-red' if echeance < 30 else 'text-green' }}" data-translate-key="control_message">
+            Nombre de jours avant le contrôle
+        </h2>
+        <h2 id="controle-message_2" class="{{ 'text-red' if echeance < 30 else 'text-green' }}" style="margin-left: 10px;">
+            {{ echeance }}
+        </h2>
+    </div>
+    <div class="container">
+        <div class="table-container">
+            <h3 data-translate-key="values_alarms">Valeurs et Alarmes/Défauts</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="channel" data-translate-key="channel">Channel</th>
+                        <th class="valeur" data-translate-key="count">Comptage</th>
+                        {% if mode_sans_cellules == 0 %}
+                        <th class="valeur" data-translate-key="follower">Suiveur</th>
+                        {% endif %}
+                        <th class="valeur" data-translate-key="max_value">Valeur Max</th>
+                        <th class="alarme" data-translate-key="alarm">Alarme</th>
+                        <th class="presence-source" data-translate-key="source_presence">LD atteinte</th>
+                        <th class="defaut" data-translate-key="fault">Défaut</th>
+                    </tr>
+                </thead>
+                <tbody id="values-table-body">
+                    {% for channel in channels %}
+                    <tr>
+                        <td class="channel">{{ channel.channel }}</td>
+                        <td class="valeur">{{ channel.comptage }} cps</td>
+                        {% if mode_sans_cellules == 0 %}
+                        <td class="valeur">{{ channel.suiveur }} cps</td>
+                        {% endif %}
+                        <td class="valeur">{{ channel.val_max }} cps</td>
+                        <td class="alarme"><span class="led led-off"></span></td>
+                        <td class="presence-source"><span class="led led-off"></span></td>
+                        <td class="defaut"><span class="led led-off"></span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="table-container table-cellules">
+            <h3 data-translate-key="measure_state">Etat mesure</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="cellule" data-translate-key="cell_1">Cellule 1</th>
+                        <th class="cellule" data-translate-key="cell_2">Cellule 2</th>
+                        <th class="vitesse" data-translate-key="speed">Vitesse</th>
+                        <th class="etat-mesure" data-translate-key="measure_state">Etat Mesure</th>
+                    </tr>
+                </thead>
+                <tbody id="cellules-table-body">
+                    {% if mode_sans_cellules == 1 %}
+                    <tr>
+                        <td class="cellule" colspan="4" data-translate-key="mode_no_cells">Mode Sans Cellules</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td class="cellule"><span id="cellule-1" class="led led-off"></span></td>
+                        <td class="cellule"><span id="cellule-2" class="led led-off"></span></td>
+                        <td class="vitesse" id="vitesse">{{ vitesse_1 }} km/h ({{ vitesse_10 }})</td>
+                        <td class="etat-mesure"><span id="etat-mesure" class="led led-off"></span></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container" id="graph-container">
+            <h3 data-translate-key="realtime_graph">Graphique en Temps Réel</h3>
+            <canvas id="realtime-chart"></canvas>
+        </div>
+    </div>
+
+    <audio id="alert-sound-alarme" src="{{ url_for('static', filename='alert_alarme.mp3') }}" preload="auto" loop></audio>
+    <audio id="alert-sound-point-chaud" src="{{ url_for('static', filename='alert_point_chaud.mp3') }}" preload="auto" loop></audio>
+    <audio id="alert-sound-defaut" src="{{ url_for('static', filename='alert_defaut.mp3') }}" preload="auto" loop></audio>
+
+    <div id="notification" data-translate-key="cells_open_20_minutes">Cellules ouvertes depuis 15 minutes et acquittable</div>
+    <div id="disk-space-notification"></div>
+
+    <!-- Popup modal -->
+    <div id="alarmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p data-translate-key="radioactive_alarm">Alarme radioactive. Veuillez dégager le chargement et acquitter l'alarme pour pouvoir fermer cette fenêtre</p>
+			<img src="{{ url_for('static', filename='picto_radio.png') }}" 
+				 alt="Pictogramme" 
+				 class="picto" 
+				 id="radioPicto" 
+				 style="cursor:pointer;" 
+				 title="Cliquer pour acquitter l'alarme">
+            <button id="openPdfButton" class="btn-red" data-translate-key="open_waste_management_procedure">Ouvrir la procédure de gestion du déchêt</button>
+        </div>
+    </div>
+
+    <script>
+	
+		document.getElementById('close-btn').addEventListener('click', () => {
+			const code = prompt("Entrez le code pour fermer l'application :");
+
+			if (code === "1022") {  // Code à adapter selon ton besoin
+				// Fermer la fenêtre (si possible)
+				window.close();
+
+				// OU appeler une route Flask si window.close() est bloqué :
+				// fetch('/shutdown');
+			} else {
+				alert("Code incorrect. Action annulée.");
+			}
+		});
+
+        function openInNewWindow() {
+            event.preventDefault();  // Empêche le comportement par défaut du lien
+            window.open("http://127.0.0.1", "_blank", "width=800,height=600");
+        }
+
+        function openControlCameraWindow(event) {
+            event.preventDefault();  // Empêche le comportement par défaut du lien
+            window.open("{{ url_for('control_camera') }}", "_blank", "width=800,height=600");
+        }
+
+        function changeLanguage(language) {
+            localStorage.setItem('language', language);
+            location.reload(); // Reload the page to apply the new language
+        }
+
+        function loadLanguage() {
+            const language = localStorage.getItem('language') || 'fr';
+            fetch(`/static/lang/${language}.csv`)
+                .then(response => response.text())
+                .then(csvText => {
+                    const data = parseCSV(csvText);
+                    document.querySelectorAll('[data-translate-key]').forEach(element => {
+                        const key = element.getAttribute('data-translate-key');
+                        if (data[key]) {
+                            element.innerText = data[key];
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading language file:', error));
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = {};
+            for (let i = 1; i < lines.length; i++) {
+                const [key, value] = lines[i].split(',');
+                if (key && value) {
+                    result[key] = value;
+                }
+            }
+            return result;
+        }
+
+        let alertSoundAlarme = document.getElementById('alert-sound-alarme');
+        let alertSoundPointChaud = document.getElementById('alert-sound-point-chaud');
+        let alertSoundDefaut = document.getElementById('alert-sound-defaut');
+        
+        // Activer les sons après la première interaction de l'utilisateur (clic ou touche)
+        let soundsActivated = false;
+
+        function activateSounds() {
+            if (!soundsActivated) {
+                // Démarrer les sons silencieusement pour les débloquer
+                alertSoundAlarme.play().catch(() => {});
+                alertSoundAlarme.pause();
+
+                alertSoundPointChaud.play().catch(() => {});
+                alertSoundPointChaud.pause();
+
+                alertSoundDefaut.play().catch(() => {});
+                alertSoundDefaut.pause();
+
+                soundsActivated = true;
+                console.log("Sons activés après la première interaction");
+            }
+        }
+
+        // Optimisation : Gestion des sons uniquement quand nécessaire
+        function playSound(audioElement, shouldPlay) {
+            if (shouldPlay) {
+                audioElement.play().catch((error) => {
+                    console.error(`Error playing ${audioElement.id}:`, error);
+                });
+            } else {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+            }
+        }
+
+        function checkNotifications() {
+            fetch('/get_notifications')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cell_open_notification) {
+                        showNotification('notification');
+                    }
+                    if (data.low_disk_space_notification) {
+                        showNotification('disk-space-notification', data.low_disk_space_notification);
+                    }
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+
+        function showNotification(elementId, message = '') {
+            const notification = document.getElementById(elementId);
+            if (message) {
+                notification.textContent = message;
+            }
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 10000);
+        }
+
+		function showAlarmModal() {
+			const modal = document.getElementById('alarmModal');
+			if (!modal) return; // Vérifier si la modal existe
+			modal.style.display = 'block';
+
+			const closeModal = document.getElementsByClassName('close')[0];
+			if (closeModal) {
+				closeModal.onclick = () => {
+					modal.style.display = 'none';
+				};
+			}
+
+			const picto = document.getElementById('radioPicto');
+			if (picto) {
+				picto.onclick = () => {
+					window.location.href = "/acquittement";
+				};
+			}
+
+			const openPdfButton = document.getElementById('openPdfButton');
+			if (openPdfButton) {
+				openPdfButton.onclick = () => {
+					window.open('/static/Portique Berthold V5 Procédure.pdf',
+					'_blank',
+					'width=800,height=600,top=100,left=100,menubar=no,toolbar=no');
+				};
+			}
+
+			const handleClickOutside = (event) => {
+				if (event.target === modal) {
+					modal.style.display = 'none';
+					window.removeEventListener('click', handleClickOutside);
+				}
+			};
+
+			window.addEventListener('click', handleClickOutside);
+		}
+		function hideAlarmModal() {
+			const modal = document.getElementById('alarmModal');
+			if (modal) modal.style.display = 'none';
+		}
+
+        // Remplacement de setInterval par une gestion plus optimisée
+        const notificationInterval = setInterval(checkNotifications, 10000);
+        checkNotifications();
+
+        const ctx = document.getElementById('realtime-chart').getContext('2d');
+        const MAX_VALUES = 60;
+
+        const realtimeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                scales: {
+                    x: { type: 'time', time: { unit: 'second' }, adapters: { date: 'date-fns' } },
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+
+        let previousTimestamps = [];
+        let previousData = [];
+
+        // Optimisation du fetchData : Nettoyage des données anciennes et gestion optimisée des DOM
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-datetime').innerText = data.datetime;
+
+                    let valuesTableBody = document.getElementById('values-table-body');
+                    valuesTableBody.innerHTML = '';  // Optimisation : Nettoyage du DOM avant d'ajouter de nouvelles lignes
+
+                    let alarmTriggered = false;
+
+                    data.comptage.forEach((value, index) => {
+                        if (value !== -1) {
+                            let row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="channel">${data.names[index]}</td>
+                                <td class="valeur">${value} cps</td>
+                                ${data.mode_sans_cellules == 0 ? `<td class="valeur">${data.suiveur[index]} cps</td>` : ''}
+                                <td class="valeur">${data.val_max[index]} cps</td>
+                                <td class="alarme"><span class="led ${data.alarm[index] === 0 ? 'led-green' : (data.alarm[index] === 1 ? 'led-orange' : 'led-red')}"></span></td>
+                                <td class="presence-source"><span class="led ${data.etat_point_chaud[index] === 0 ? 'led-green' : 'led-orange'}"></span></td>
+                                <td class="defaut"><span class="led ${data.defaut[index] === 0 ? 'led-green' : (data.defaut[index] === 1 ? 'led-orange' : 'led-red')}"></span></td>
+                            `;
+                            valuesTableBody.appendChild(row);
+
+                            if (data.alarm[index] === 1 || data.alarm[index] === 2) {
+                                alarmTriggered = true;
+                            }
+                        }
+                    });
+
+                    if (alarmTriggered) {
+						showAlarmModal();       // garde cette ligne
+					} else {
+						hideAlarmModal();       // ajoute celle-ci
+					}
+
+                    playSound(alertSoundAlarme, data.alarm.some(value => value === 1 || value === 2));
+                    playSound(alertSoundPointChaud, data.etat_point_chaud.some(value => value === 1));
+                    playSound(alertSoundDefaut, data.defaut.some(value => value === 1 || value === 2));
+
+                    // Gestion et optimisation des cellules
+                    if (data.mode_sans_cellules == 1) {
+                        document.getElementById('cellules-table-body').innerHTML = `
+                            <tr>
+                                <td class="cellule" colspan="4" data-translate-key="mode_no_cells">Mode Sans Cellules</td>
+                            </tr>
+                        `;
+                    } else {
+                        document.getElementById('cellules-table-body').innerHTML = `
+                            <tr>
+                                <td class="cellule"><span id="cellule-1" class="led led-off"></span></td>
+                                <td class="cellule"><span id="cellule-2" class="led led-off"></span></td>
+                                <td class="vitesse" id="vitesse">${data.vitesse_1} km/h (${data.vitesse_10})</td>
+                                <td class="etat-mesure"><span id="etat-mesure" class="led led-off"></span></td>
+                            </tr>
+                        `;
+
+                        let cellule1 = document.getElementById('cellule-1');
+                        let cellule2 = document.getElementById('cellule-2');
+                        let vitesse = document.getElementById('vitesse');
+
+                        if (cellule1) {
+                            cellule1.className = data.cells.cellule_1 === 0 ? 'led led-green' : 'led led-blue';
+                        }
+
+                        if (cellule2) {
+                            cellule2.className = data.cells.cellule_2 === 0 ? 'led led-green' : 'led led-blue';
+                        }
+
+                        if (vitesse) {
+                            vitesse.innerText = `${data.vitesse_1} km/h (${data.vitesse_10})`;
+                        }
+                    }
+
+                    let etatMesure = document.getElementById('etat-mesure');
+                    if (etatMesure) {
+                        let etatMesureClass = 'led-green';
+                        if (data.mesure.includes(1)) {
+                            etatMesureClass = 'led-yellow';
+                        } else if (data.mesure.includes(2)) {
+                            etatMesureClass = 'led-red';
+                        }
+                        etatMesure.className = `led ${etatMesureClass}`;
+                    }
+
+                    // Optimisation des graphiques pour limiter l'accumulation des données
+                    if (JSON.stringify(data.timestamps) !== JSON.stringify(previousTimestamps)) {
+                        const labels = data.timestamps.slice(-MAX_VALUES);  // Limitation du nombre de points
+                        const datasets = data.names.map((name, index) => {
+                            if (data[`compteur_${index + 1}`].some(val => val >= 0)) {
+                                return {
+                                    label: name,
+                                    data: data[`compteur_${index + 1}`]
+                                        .slice(-MAX_VALUES)
+                                        .map((val, i) => ({
+                                            x: labels[i],
+                                            y: val >= 0 ? val : null
+                                        })),
+                                    borderColor: ['red', 'blue', 'green', 'purple'][index % 4],
+                                    fill: false
+                                };
+                            }
+                            return null;
+                        }).filter(dataset => dataset !== null);
+
+                        realtimeChart.data.labels = labels;
+                        realtimeChart.data.datasets = datasets;
+                        realtimeChart.update();
+
+                        previousTimestamps = data.timestamps;
+                        previousData = data;
+                    }
+
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        const fetchDataInterval = setInterval(fetchData, 1000);
+        fetchData();
+
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const doc = document.documentElement;
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                doc.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        // Activer les sons en plus de passer en plein écran
+        activateSounds();
+
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        });
+
+        // Fonction pour recharger la page après un intervalle
+        function reloadPage() {
+            location.reload();
+        }
+
+        // Optimisation : rechargement automatique désactivable ou ajustable si nécessaire
+        const reloadInterval = setInterval(reloadPage, 14400000);
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title data-translate-key="remote_settings_title">Paramètres Remote - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="remote_settings_title">Paramètres Remote</h2>
+    <form action="{{ url_for('remote_params') }}" method="post">
+        <div>
+            <label for="Rem_IP" data-translate-key="remote_unit_ip">Adresse IP de l'unité remote:</label>
+            <input type="text" id="Rem_IP" name="Rem_IP" value="{{ params['Rem_IP'] }}"><br><br>
+        </div>
+        <div>
+            <label for="Rem_IP_2" data-translate-key="second_remote_unit_ip">Adresse IP de la deuxième unité remote:</label>
+            <input type="text" id="Rem_IP_2" name="Rem_IP_2" value="{{ params['Rem_IP_2'] }}"><br><br>
+        </div>
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="camera_settings_title">Paramètres Caméra - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="camera_settings_title">Paramètres Caméra</h2>
+    <form action="{{ url_for('camera_params') }}" method="post">
+        <label for="RTSP" data-translate-key="rtsp_stream">Flux RTSP:</label>
+        <input type="text" id="RTSP" name="RTSP" value="{{ params['RTSP'] }}"><br><br>
+        
+        <label for="IP" data-translate-key="camera_ip">Adresse IP Caméra:</label>
+        <input type="text" id="IP" name="IP" value="{{ params['IP'] }}"><br><br>
+        
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+</body>
+</html>

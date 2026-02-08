@@ -1,0 +1,179 @@
+key,value
+camera_settings_title,Camera Settings - GammaScan eV5
+camera_settings_title,Camera Settings
+rtsp_stream,RTSP Stream:
+camera_ip,Camera IP Address:
+save_button,Save
+back_button,Back
+communication_settings_title,Communication Settings - GammaScan eV5
+communication_settings_title,Communication Settings
+camera,Camera:
+modbus,Modbus:
+evx,eVx:
+sms_module,SMS Module:
+save_button,Save
+back_button,Back
+email_settings_title,Email Settings - GammaScan eV5
+email_settings_title,Email Settings
+smtp_server,SMTP Server:
+port,SMTP Port:
+login,SMTP Login:
+password,SMTP Password:
+sender_address,Sender Address:
+recipients,Recipients (separated by commas):
+save_button,Save
+back_button,Back
+general_settings_title,General Settings - GammaScan eV5
+general_settings_title,General Settings
+portico_name,Portico Name:
+sample_time,Sampling Time (s):
+distance_between_cells,Distance Between Cells (m):
+mode_without_cells,No Cells Mode:
+follower_threshold_factor,Follower Threshold Multiple Factor:
+threshold_2,Threshold 2:
+min_bdf_threshold,Min BDF Threshold:
+max_bdf_threshold,Max BDF Threshold:
+next_maintenance_date,Next Maintenance Visit Date:
+save_button,Save
+back_button,Back
+login_title,Login
+login_title,Login
+username,Username:
+password,Password:
+login_button,Login
+back_button,Back
+manage_users_title,User Management
+manage_users_title,User Management
+add_user,Add User
+username,Username:
+password,Password:
+access_level,Access Level:
+user,User
+admin,Administrator
+add_button,Add
+back_button,Back
+existing_users,Existing Users
+delete_button,Delete
+simulation_mode_title,Simulation Mode - GammaScan eV5
+simulation_mode_title,Simulation Mode
+SIM,SIM:
+save_button,Save
+back_button,Back
+network_settings_title,Network Configuration
+network_settings_title,Network Configuration
+configure_static_ip,Configure a Static IP Address
+interface,Interface:
+ip_address,IP Address:
+netmask,Subnet Mask:
+gateway,Gateway:
+configure_static_ip_button,Configure Static IP
+configure_dhcp,Configure the Interface to Use DHCP
+interface,Interface:
+configure_dhcp_button,Configure DHCP
+configure_dns,Configure DNS Servers
+dns_servers,DNS Servers (separated by commas):
+configure_dns_button,Configure DNS
+back_button,Back
+remote_settings_title,Remote Settings - GammaScan eV5
+remote_settings_title,Remote Settings
+remote_unit_ip,Remote Unit IP Address:
+second_remote_unit_ip,Second Remote Unit IP Address:
+save_button,Save
+back_button,Back
+sms_settings_title,SMS Settings - GammaScan eV5
+sms_settings_title,SMS Settings
+phone_numbers,Phone Numbers (separated by commas):
+save_button,Save
+back_button,Back
+settings,Settings
+general_settings,General Settings
+lanes_settings,Lanes
+remote_settings,Remote
+camera_settings,Camera
+email_settings,Email
+sms_settings,SMS
+communication_settings,Communication
+advanced_settings,Advanced Settings
+manage_users,User Management
+lanes_gpio,GPIO Lanes
+simulation_mode,Simulation Mode
+network_settings,Network Settings
+maj_ntp,NTP Server Update
+restart_portico,Portico Restart
+utilities,Utilities
+view_data,Passage Data Visualization
+start_rustdesk,Launch Remote ctrl via Internet
+acknowledgement,Acknowledgement
+language,Language
+logout,Logout
+full_screen,Supervision mode
+control_message,Number of Days Before Control
+values_alarms,Values and Alarms/Faults
+channel,Channel
+count,Counting
+follower,Follower
+max_value,Max Value
+alarm,Alarm
+source_presence,Anomaly Bkg
+fault,Fault
+measure_state,Measurement State
+cell_1,Cell 1
+cell_2,Cell 2
+speed,Speed
+measure_state,Measurement State
+mode_no_cells,No Cells Mode
+realtime_graph,Real-time Graph
+cells_open_20_minutes,Cells Open for 15 Minutes and Acknowledgable
+radioactive_alarm,Radioactive Alarm. Please clear the load and acknowledge the alarm to close this window
+open_waste_management_procedure,Open Management Procedure
+data_visualization_title,Data Visualization
+data_visualization_title,Data Visualization
+start_date,Start Date:
+end_date,End Date:
+filter_alarms,Show Only Rows with Alarms:
+export_csv,Export CSV
+back_button,Back
+gpio_settings_title,GPIO Settings - GammaScan eV5
+gpio_settings_title,GPIO Settings
+pin_1,PIN 1:
+pin_2,PIN 2:
+pin_3,PIN 3:
+pin_4,PIN 4:
+save_button,Save
+back_button,Back
+lane_settings_title,Lanes Settings - GammaScan eV5
+lane_settings_title,Lanes Settings
+detector_1_on,Detector 1 (ON/OFF):
+detector_2_on,Detector 2 (ON/OFF):
+detector_3_on,Detector 3 (ON/OFF):
+detector_4_on,Detector 4 (ON/OFF):
+detector_5_on,Detector 5 (ON/OFF):
+detector_6_on,Detector 6 (ON/OFF):
+detector_7_on,Detector 7 (ON/OFF):
+detector_8_on,Detector 8 (ON/OFF):
+detector_9_on,Detector 9 (ON/OFF):
+detector_10_on,Detector 10 (ON/OFF):
+detector_11_on,Detector 11 (ON/OFF):
+detector_12_on,Detector 12 (ON/OFF):
+detector_1_name,Detector Name 1:
+detector_2_name,Detector Name 2:
+detector_3_name,Detector Name 3:
+detector_4_name,Detector Name 4:
+detector_5_name,Detector Name 5:
+detector_6_name,Detector Name 6:
+detector_7_name,Detector Name 7:
+detector_8_name,Detector Name 8:
+detector_9_name,Detector Name 9:
+detector_10_name,Detector Name 10:
+detector_11_name,Detector Name 11:
+detector_12_name,Detector Name 12:
+save_button,Save
+back_button,Back
+new_ntp_server_label,NTP Server
+update_button,Update
+back_button,Back
+test_smtp,SMTP Test
+maj_ntp,NTP Server Update
+Follow block,Threshold blocking
+refresh_button,Refresh datas
+

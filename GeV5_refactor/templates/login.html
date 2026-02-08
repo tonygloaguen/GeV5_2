@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title data-translate-key="login_title">Connexion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="login_title">Connexion</h2>
+    <form action="{{ url_for('login', next=next) }}" method="post" autocomplete="off">
+        <input type="hidden" name="next" value="{{ next }}">
+        <div>
+            <label for="username" data-translate-key="username">Nom d'utilisateur:</label>
+            <input type="text" id="username" name="username" autocomplete="nope" required><br><br>
+        </div>
+        <div>
+            <label for="password" data-translate-key="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" autocomplete="nope" required><br><br>
+        </div>
+        <input type="submit" value="Connexion" class="submit-button" data-translate-key="login_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

@@ -1,0 +1,141 @@
+key,value
+camera_settings_title,Parámetros de la cámara
+rtsp_stream,Flujo RTSP:
+camera_ip,Dirección IP de la cámara:
+save_button,Guardar
+back_button,Volver
+communication_settings_title,Parámetros de comunicación
+camera,Cámara
+modbus,Modbus:
+evx,eVx:
+sms_module,SMS Módulo:
+email_settings_title,Configuración de correo electrónico
+smtp_server,Servidor SMTP:
+port,Puerto SMTP:
+login,Inicio de sesión SMTP:
+password,Contraseña:
+sender_address,Dirección del remitente:
+recipients,Destinatarios (separados por comas):
+general_settings_title,Parámetros generales
+portico_name,Nombre del portal:
+sample_time,Tiempo de muestreo (s):
+distance_between_cells,Distancia entre células (m):
+mode_without_cells,Modo sin células:
+follower_threshold_factor,Umbral de seguimiento de múltiples factores:
+threshold_2,Umbral 2:
+min_bdf_threshold,Umbral BDF mínimo:
+max_bdf_threshold,Umbral BDF máximo:
+next_maintenance_date,Fecha de la próxima visita de mantenimiento:
+login_title,Inicio de sesión
+username,Nombre de usuario:
+login_button,Inicio de sesión
+manage_users_title,Gestión de usuarios
+add_user,Añadir usuario
+access_level,Nivel de acceso:
+user,Usuario
+admin,Administrador
+add_button,Añadir
+existing_users,Usuarios existentes
+delete_button,Borrar
+simulation_mode_title,Modo Simulación
+SIM,SIM:
+network_settings_title,Configuración de la red
+configure_static_ip,Configuración de una dirección IP estática
+interface,Interfaz:
+ip_address,Dirección IP:
+netmask,Máscara de subred:
+gateway,Puerta de enlace:
+configure_static_ip_button,Configurar IP estática
+configure_dhcp,Configurar interfaz para utilizar DHCP
+configure_dhcp_button,Configurar DHCP
+configure_dns,Configurar servidores DNS
+dns_servers,Servidores DNS (separados por comas):
+configure_dns_button,Configurar DNS
+remote_settings_title,Parámetros remotos
+remote_unit_ip,Dirección IP de la unidad remota:
+second_remote_unit_ip,Dirección IP de la segunda unidad remota:
+sms_settings_title,Configuración de SMS
+phone_numbers,Números de teléfono (separados por comas):
+settings,Ajustes
+general_settings,Parámetros generales
+lanes_settings,Canales
+remote_settings,Remotos
+camera_settings,Cámara
+email_settings,Correo electrónico
+sms_settings,Ajustes SMS
+communication_settings,Comunicación
+advanced_settings,Ajustes avanzados
+manage_users,Gestión de usuarios
+lanes_gpio,Canales GPIO
+simulation_mode,Modo de simulación
+network_settings,Ajustes de red
+restart_portico,reinicio del portal
+utilities,Utilidades
+view_data,Visualización de los datos de paso
+start_rustdesk,Iniciar Remote ctrl via Internet
+acknowledgement,Reconocer
+language,Idioma
+logout,Cerrar sesión
+full_screen,Modo de supervisión
+control_message,Número de días antes de la inspección
+values_alarms,Valores y Alarmas/Fallos
+channel,Canal
+count,Recuento
+follower,Rastreador
+max_value,Valor máximo
+alarm,Alarma
+source_presence,Anomalia de Rdf
+fault,Fallo
+measure_state,Estado de medición
+cell_1,Celda 1
+cell_2,Celda 2
+speed,Velocidad
+mode_no_cells,No Cell Modo
+realtime_graph,Gráfico en tiempo real
+cells_open_20_minutes,Células abiertas durante 15 minutos y reconocibles
+radioactive_alarm,Alarma radioactiva. Por favor despeje la carga y confirme la alarma antes de cerrar esta ventana.
+open_waste_management_procedure,Abrir el procedimiento de gestión
+data_visualization_title,Vista de datos
+start_date,Fecha de inicio :
+end_date,Fecha final :
+filter_alarms,Mostrar sólo las líneas con alarmas :
+export_csv,Exportar CSV
+gpio_settings_title,Parámetros GPIO
+pin_1,PIN 1
+pin_2,PIN 2:
+pin_3,PIN 3:
+pin_4,PIN 4:
+lane_settings_title,Parámetros de los canales
+detector_1_on,Sensor 1 (ON/OFF):
+detector_2_on,Sensor 2 (ON/OFF):
+detector_3_on,Sensor 3 (ON/OFF):
+detector_4_on,Sensor 4 (ON/OFF):
+detector_5_on,Sensor 5 (ON/OFF):
+detector_6_on,Sensor 6 (ON/OFF):
+detector_7_on,Sensor 7 (ON/OFF):
+detector_8_on,Sensor 8 (ON/OFF):
+detector_9_on,Sensor 9 (ON/OFF):
+detector_10_on,Sensor 10 (ON/OFF):
+detector_11_on,Sensor 11 (ON/OFF):
+detector_12_on,Sensor 12 (ON/OFF):
+detector_1_name,Nombre Sensor 1:
+detector_2_name,Nombre Sensor 2:
+detector_3_name,Nombre Sensor 3:
+detector_4_name,Nombre Sensor 4:
+detector_5_name,Nombre del sensor 5:
+detector_6_name,Nombre del sensor 6:
+detector_7_name,Nombre del detector 7:
+detector_8_name,Nombre del detector 8:
+detector_9_name,Nombre del detector 9:
+detector_10_name,Nombre del detector 10:
+detector_11_name,Nombre del detector 11:
+detector_12_name,Nombre del detector 12:
+save_button,Guardar
+back_button,Atrás
+new_ntp_server_label,Servidor NTP
+update_button,Actualizar ࠊour
+back_button,Atrás
+test_smtp,Probar SMTP
+maj_ntp,Actualizar servidor NTP
+Follow block,Umbral de bloqueo
+refresh_button,Actualizar datos

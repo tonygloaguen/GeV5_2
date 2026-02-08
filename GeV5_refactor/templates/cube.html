@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Représentation Cube avec Alarmes</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .cube {
+            position: relative;
+            width: 200px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(20deg);
+        }
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: #333;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .left {
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+        .right {
+            transform: rotateY(90deg) translateZ(100px);
+        }
+        .top {
+            transform: rotateX(90deg) translateZ(100px);
+        }
+        .bottom {
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+        .green {
+            background-color: green;
+            color: white;
+        }
+        .orange {
+            background-color: orange;
+            color: white;
+        }
+        .red {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="cube">
+        <div class="face left" id="left-face">
+            <div>
+                Détecteur 1: 954 cps<br>
+                Détecteur 2: 999 cps<br>
+                Détecteur 3: 1020 cps<br>
+                Détecteur 4: 987 cps
+            </div>
+        </div>
+        <div class="face right" id="right-face">
+            <div>
+                Détecteur 5: 951 cps<br>
+                Détecteur 6: 1041 cps<br>
+                Détecteur 7: 1011 cps<br>
+                Détecteur 8: 1049 cps
+            </div>
+        </div>
+        <div class="face top" id="top-face">
+            Voie 9: 995 cps
+        </div>
+        <div class="face bottom" id="bottom-face">
+            Voie 10: 995 cps
+        </div>
+    </div>
+
+    <script>
+        // Example alarm data (replace with real data)
+        const alarms = {
+            'D1': 0, // green
+            'D2': 1, // orange
+            'D3': 2, // red
+            'D4': 0, // green
+            'D5': 1, // orange
+            'D6': 0, // green
+            'D7': 2, // red
+            'D8': 0, // green
+            'Voie9': 1, // orange
+            'Voie10': 0 // green
+        };
+
+        function updateFaceColors() {
+            // Update left face
+            const leftFace = document.getElementById('left-face');
+            const leftFaceValues = leftFace.querySelector('div').innerHTML;
+            leftFace.className = `face left ${getAlarmColor(alarms.D1)}`;
+
+            // Update right face
+            const rightFace = document.getElementById('right-face');
+            const rightFaceValues = rightFace.querySelector('div').innerHTML;
+            rightFace.className = `face right ${getAlarmColor(alarms.D5)}`;
+
+            // Update top face
+            const topFace = document.getElementById('top-face');
+            const topFaceValues = topFace.innerHTML;
+            topFace.className = `face top ${getAlarmColor(alarms.Voie9)}`;
+
+            // Update bottom face
+            const bottomFace = document.getElementById('bottom-face');
+            const bottomFaceValues = bottomFace.innerHTML;
+            bottomFace.className = `face bottom ${getAlarmColor(alarms.Voie10)}`;
+        }
+
+        function getAlarmColor(alarm) {
+            switch (alarm) {
+                case 0:
+                    return 'green';
+                case 1:
+                    return 'orange';
+                case 2:
+                    return 'red';
+                default:
+                    return '';
+            }
+        }
+
+        // Initialize face colors
+        updateFaceColors();
+    </script>
+</body>
+</html>

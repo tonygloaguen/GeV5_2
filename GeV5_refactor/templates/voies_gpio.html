@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-translate-key="gpio_settings_title">Paramètres GPIO - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2 data-translate-key="gpio_settings_title">Paramètres GPIO</h2>
+    <form action="{{ url_for('voies_gpio_params') }}" method="post">
+            <label for="PIN_1" data-translate-key="pin_1">PIN 1:</label>
+            <input type="text" id="PIN_1" name="PIN_1" value="{{ params['PIN_1'] }}"><br><br>
+            <label for="PIN_2" data-translate-key="pin_2">PIN 2:</label>
+            <input type="text" id="PIN_2" name="PIN_2" value="{{ params['PIN_2'] }}"><br><br>
+            <label for="PIN_3" data-translate-key="pin_3">PIN 3:</label>
+            <input type="text" id="PIN_3" name="PIN_3" value="{{ params['PIN_3'] }}"><br><br>
+            <label for="PIN_4" data-translate-key="pin_4">PIN 4:</label>
+            <input type="text" id="PIN_4" name="PIN_4" value="{{ params['PIN_4'] }}"><br><br>
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+    <br>
+</body>
+</html>

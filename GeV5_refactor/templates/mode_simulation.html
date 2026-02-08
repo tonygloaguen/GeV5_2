@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title data-translate-key="simulation_mode_title">Mode Simulation - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="simulation_mode_title">Mode Simulation</h2>
+    <form action="{{ url_for('mode_simulation') }}" method="post">
+        <div>
+            <label for="SIM" data-translate-key="SIM">SIM:</label>
+            <select id="SIM" name="SIM">
+                <option value="1" {% if params['SIM'] == '1' %}selected{% endif %}>Oui</option>
+                <option value="0" {% if params['SIM'] == '0' %}selected{% endif %}>Non</option>
+            </select><br><br>
+        </div>
+
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+    <br>
+</body>
+</html>

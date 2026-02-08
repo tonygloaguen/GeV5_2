@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="general_settings_title">Paramètres Généraux - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+</head>
+<body>
+    <h2 data-translate-key="general_settings_title">Paramètres Généraux</h2>
+    <form action="{{ url_for('general_params') }}" method="post">
+        <label for="Nom_portique" data-translate-key="portico_name">Nom du portique:</label>
+        <input type="text" id="Nom_portique" name="Nom_portique" value="{{ params['Nom_portique'] }}"><br><br>
+        <label for="sample_time" data-translate-key="sample_time">Temps d'échantillonnage (s):</label>
+        <input type="text" id="sample_time" name="sample_time" value="{{ params['sample_time'] }}"><br><br>
+        <label for="distance_cellules" data-translate-key="distance_between_cells">Distance entre les cellules (m):</label>
+        <input type="text" id="distance_cellules" name="distance_cellules" value="{{ params['distance_cellules'] }}"><br><br>
+        <label for="Mode_sans_cellules" data-translate-key="mode_without_cells">Mode sans cellules:</label>
+        <select id="Mode_sans_cellules" name="Mode_sans_cellules">
+            <option value="1" {% if params['Mode_sans_cellules'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['Mode_sans_cellules'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+        <label for="multiple" data-translate-key="follower_threshold_factor">Facteur multiple seuil suiveur:</label>
+        <input type="text" id="multiple" name="multiple" value="{{ params['multiple'] }}"><br><br>
+        <label for="suiv_block" data-translate-key="Follow block">Blocage du seuil suiveur:</label>
+        <select id="suiv_block" name="suiv_block">
+            <option value="1" {% if params['suiv_block'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['suiv_block'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+        <label for="seuil2" data-translate-key="threshold_2">Seuil 2:</label>
+        <input type="text" id="seuil2" name="seuil2" value="{{ params['seuil2'] }}"><br><br>
+        <label for="low" data-translate-key="min_bdf_threshold">Seuil mini BDF:</label>
+		<input  type="number"
+			id="low"
+			name="low"
+			value="{{ params['low'] }}"
+			min="300"
+			step="1"
+			required><br><br>
+        <label for="high" data-translate-key="max_bdf_threshold">Seuil maxi BDF:</label>
+        <input type="text" id="high" name="high" value="{{ params['high'] }}"><br><br>
+        <label for="date_prochaine_visite" data-translate-key="next_maintenance_date">Date de la prochaine visite de maintenance:</label>
+        <input type="text" id="date_prochaine_visite" name="date_prochaine_visite" value="{{ params['date_prochaine_visite'] }}"><br><br>
+        <label for="language" data-translate-key="language_label">Langue des rapports PDF:</label>
+        <select id="language" name="language">
+            <option value="fr" {% if params['language'] == 'fr' %}selected{% endif %}>Français</option>
+            <option value="en" {% if params['language'] == 'en' %}selected{% endif %}>English</option>
+            <option value="es" {% if params['language'] == 'es' %}selected{% endif %}>Español</option>
+            <option value="pt" {% if params['language'] == 'pt' %}selected{% endif %}>Português</option>
+        </select><br><br>
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+</body>
+</html>

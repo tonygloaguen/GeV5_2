@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="sms_settings_title">Paramètres SMS - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2 data-translate-key="sms_settings_title">Paramètres SMS</h2>
+    <form action="{{ url_for('sms_params') }}" method="post">
+        <label for="SMS" data-translate-key="phone_numbers">Numéros de téléphone (séparés par des virgules):</label>
+        <input type="text" id="SMS" name="SMS" value="{{ params['SMS'] }}"><br><br>
+        
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+</body>
+</html>

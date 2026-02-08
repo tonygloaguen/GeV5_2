@@ -1,0 +1,32 @@
+
+.keyboard-wrapper {
+    position: relative;
+}
+
+.keyboard {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.keyboard .row {
+    display: flex;
+}
+
+.keyboard .key {
+    flex: 1;
+    padding: 10px;
+    margin: 2px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+
+.keyboard .key:active {
+    background: #ddd;
+}

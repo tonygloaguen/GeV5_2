@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="communication_settings_title">Paramètres de Communication - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="communication_settings_title">Paramètres de Communication</h2>
+    <form action="{{ url_for('communication_params') }}" method="post">
+        <label for="camera" data-translate-key="camera">Caméra:</label>
+        <select id="camera" name="camera">
+            <option value="1" {% if params['camera'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['camera'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="modbus" data-translate-key="modbus">Modbus:</label>
+        <select id="modbus" name="modbus">
+            <option value="1" {% if params['modbus'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['modbus'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="eVx" data-translate-key="evx">eVx:</label>
+        <select id="eVx" name="eVx">
+            <option value="1" {% if params['eVx'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['eVx'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="mod_SMS" data-translate-key="sms_module">Module SMS:</label>
+        <select id="mod_SMS" name="mod_SMS">
+            <option value="1" {% if params['mod_SMS'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['mod_SMS'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>    
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+/* Thème allégé pour écran 7" Raspberry Pi */
+
+body {
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    background-color: #f5f9fa;
+    margin: 0;
+    padding: 0;
+    color: #1a2b44;
+    /* laisse le scroll horizontal possible si un sous-conteneur en a besoin */
+    overflow-x: auto;                   /* ▼ */
+}
+
+.navbar {
+    background-color: #00b5b5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 4px 10px;
+    height: auto;
+    font-size: 13px;
+}
+.navbar a, .dropdown .dropbtn, .fullscreen-btn, .close-btn {
+    padding: 6px 10px;
+    margin: 2px 4px;
+    font-size: 13px;
+    background-color: #00b5b5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+}
+.navbar a:hover, .dropbtn:hover {
+    background-color: #019292;
+}
+
+.version-display {
+    font-size: 12px;
+    margin-left: auto;
+    color: white;
+}
+
+h2, h3 {
+    font-size: 16px;
+    margin: 8px 0;
+    text-align: center;
+}
+
+/* Tableau */
+.table-container {
+    margin: 10px;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    overflow-x: auto;                   /* ▼ barre dans le bloc tableau */
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+th, td {
+    padding: 6px 4px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background: #d7f3f3;
+    color: #007878;
+    font-weight: bold;
+}
+tr:nth-child(even) {
+    background: #f2f9f9;
+}
+
+/* LEDs */
+.led {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 auto;
+}
+.led-green { background-color: #00cc66; }
+.led-red { background-color: #e63946; }
+.led-orange { background-color: #f4a261; }
+.led-blue { background-color: #0077b6; }
+.led-yellow { background-color: #fada5e; }
+.led-off { background-color: #ccc; }
+
+.text-green { color: #00cc66 !important; }
+.text-red   { color: #e63946 !important; }
+
+#graph-container {
+    margin: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+#graph-container canvas {
+    width: 100% !important;
+    max-height: 140px;
+}
+
+/* État vitesse + cellules */
+.etat-measure-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+    padding: 5px 10px;
+    margin: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Notifications */
+#notification, #disk-space-notification {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4d4d;
+    color: white;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 6px;
+    z-index: 1000;
+}
+
+/* === Override position modal haut-droite + réduction éléments === */
+
+
+.modal-content {
+    width: 200px;
+    max-width: 70vw;
+    margin: 20px 20px 0 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+.modal-content .picto {
+    width: 75px;
+    height: auto;
+    display: block;
+    margin: 8px auto;
+}
+
+#openPdfButton.btn-red {
+    padding: 6px 10px;
+    font-size: 0.9em;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 0;
+}
+.close:hover,
+.close:focus {
+    color: #fd4b4b;
+    text-decoration: none;
+}
+
+.btn-red {
+    background: #fd4b4b;
+    color: #fff;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    margin-top: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 16px rgba(253,75,75,0.05);
+    transition: background 0.2s;
+}
+.btn-red:hover { background: #b92727; }
+
+
+/* Responsive : très petits écrans */
+@media (max-width: 800px) {
+    th, td {
+        font-size: 12px;
+        padding: 4px;
+    }
+    .navbar {
+        font-size: 12px;
+        padding: 2px 4px;
+    }
+}
+/* Menu déroulant masqué par défaut */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #00b5b5;
+    min-width: 160px;
+    z-index: 2;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+/* Afficher seulement au survol */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+input[type="submit"].submit-button, .submit-button {
+    background: #00b5b5;
+    color: #fff;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,181,181,0.10);
+    transition: background 0.2s, transform 0.2s;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    outline: none;
+    display: inline-block;
+}
+input[type="submit"].submit-button:hover, .submit-button:hover {
+    background: #019292;
+    transform: scale(1.04);
+}
+
+a.back-button {
+    background: #fff;
+    color: #00b5b5;
+    border: 2px solid #00b5b5;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+a.back-button:hover {
+    background: #00b5b5;
+    color: #fff;
+    transform: scale(1.04);
+}
+input[type="text"],input[type="number"], select {
+    padding: 7px 8px;
+    border: 1px solid #bcdfe0;
+    border-radius: 5px;
+    font-size: 15px;
+    background: #fafcfc;
+    margin-bottom: 5px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type="text"]:focus, select:focus {
+    border-color: #00b5b5;
+    box-shadow: 0 0 4px #00b5b5;
+}
+.table-container table {
+    white-space: nowrap;                /* ▼ empêche le retour à la ligne dans les cellules */
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.dropdown-content a {
+    line-height: 2;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    /* Les autres propriétés déjà présentes restent */
+}
+
+.dropdown-content a[data-translate-key="communication_settings"] {
+    white-space: normal;
+    word-break: break-word;
+	max-width: 100px;
+}
+
+/* Modal piloté par classe */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+.modal.open { display: flex; }
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  margin: 40px;
+  border-radius: 8px;
+}
+
+/* === Mode “gel” visuel quand véhicule présent (optionnel) === */
+body.passages-frozen { cursor: not-allowed; }
+body.passages-frozen .valeur,
+body.passages-frozen .channel,
+body.passages-frozen .cellule,
+body.passages-frozen .etat-mesure {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+body.passages-frozen #radioPicto {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+/* === Présentation de la colonne État de passage (optionnel) === */
+.etat-passage { text-align: center; }
+.etat-passage .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+/* Bannière défaut cellules ouvertes (affichage fixe) */
+.banner {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffefd5;
+  color: #8a4b08;
+  border: 1px solid #f0c36d;
+  padding: 8px 14px;
+  border-radius: 6px;
+  z-index: 2000;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  font-weight: 600;
+}
+
+/* Colonne État de passage */
+.etat-passage { text-align: center; }
+
+/* LED (suppose que led-green / led-blue / led-orange / led-red existent déjà) */

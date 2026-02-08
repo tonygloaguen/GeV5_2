@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="update_ntp_title">MAJ du Serveur NTP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="update_ntp_heading">Mettre à Jour le Serveur NTP</h2>
+    
+    <!-- Affichage des messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message|safe }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST">
+        <label for="ntp_server" data-translate-key="new_ntp_server_label">Nouveau Serveur NTP:</label>
+        <input type="text" id="ntp_server" name="ntp_server" required>
+        <button type="submit" data-translate-key="update_button">Mettre à Jour</button>
+    </form>
+    <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+</body>
+</html>

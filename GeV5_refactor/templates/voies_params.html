@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="lane_settings_title">Paramètres des Voies - GammaScan eV5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h2 data-translate-key="lane_settings_title">Paramètres des Voies</h2>
+    <form action="{{ url_for('voies_params') }}" method="post">
+        <label for="D1_ON" data-translate-key="detector_1_on">Détecteur 1 (ON/OFF):</label>
+        <select id="D1_ON" name="D1_ON">
+            <option value="1" {% if params['D1_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D1_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D2_ON" data-translate-key="detector_2_on">Détecteur 2 (ON/OFF):</label>
+        <select id="D2_ON" name="D2_ON">
+            <option value="1" {% if params['D2_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D2_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D3_ON" data-translate-key="detector_3_on">Détecteur 3 (ON/OFF):</label>
+        <select id="D3_ON" name="D3_ON">
+            <option value="1" {% if params['D3_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D3_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D4_ON" data-translate-key="detector_4_on">Détecteur 4 (ON/OFF):</label>
+        <select id="D4_ON" name="D4_ON">
+            <option value="1" {% if params['D4_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D4_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D5_ON" data-translate-key="detector_5_on">Détecteur 5 (ON/OFF):</label>
+        <select id="D5_ON" name="D5_ON">
+            <option value="1" {% if params['D5_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D5_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D6_ON" data-translate-key="detector_6_on">Détecteur 6 (ON/OFF):</label>
+        <select id="D6_ON" name="D6_ON">
+            <option value="1" {% if params['D6_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D6_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D7_ON" data-translate-key="detector_7_on">Détecteur 7 (ON/OFF):</label>
+        <select id="D7_ON" name="D7_ON">
+            <option value="1" {% if params['D7_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D7_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D8_ON" data-translate-key="detector_8_on">Détecteur 8 (ON/OFF):</label>
+        <select id="D8_ON" name="D8_ON">
+            <option value="1" {% if params['D8_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D8_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D9_ON" data-translate-key="detector_9_on">Détecteur 9 (ON/OFF):</label>
+        <select id="D9_ON" name="D9_ON">
+            <option value="1" {% if params['D9_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D9_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D10_ON" data-translate-key="detector_10_on">Détecteur 10 (ON/OFF):</label>
+        <select id="D10_ON" name="D10_ON">
+            <option value="1" {% if params['D10_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D10_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D11_ON" data-translate-key="detector_11_on">Détecteur 11 (ON/OFF):</label>
+        <select id="D11_ON" name="D11_ON">
+            <option value="1" {% if params['D11_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D11_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        <label for="D12_ON" data-translate-key="detector_12_on">Détecteur 12 (ON/OFF):</label>
+        <select id="D12_ON" name="D12_ON">
+            <option value="1" {% if params['D12_ON'] == '1' %}selected{% endif %}>Oui</option>
+            <option value="0" {% if params['D12_ON'] == '0' %}selected{% endif %}>Non</option>
+        </select><br><br>
+
+        
+        <label for="D1_nom" data-translate-key="detector_1_name">Nom Détecteur 1:</label>
+        <input type="text" id="D1_nom" name="D1_nom" value="{{ params['D1_nom'] }}"><br><br>
+        
+        <label for="D2_nom" data-translate-key="detector_2_name">Nom Détecteur 2:</label>
+        <input type="text" id="D2_nom" name="D2_nom" value="{{ params['D2_nom'] }}"><br><br>
+        
+        <label for="D3_nom" data-translate-key="detector_3_name">Nom Détecteur 3:</label>
+        <input type="text" id="D3_nom" name="D3_nom" value="{{ params['D3_nom'] }}"><br><br>
+        
+        <label for="D4_nom" data-translate-key="detector_4_name">Nom Détecteur 4:</label>
+        <input type="text" id="D4_nom" name="D4_nom" value="{{ params['D4_nom'] }}"><br><br>
+        
+        <label for="D5_nom" data-translate-key="detector_5_name">Nom Détecteur 5:</label>
+        <input type="text" id="D5_nom" name="D5_nom" value="{{ params['D5_nom'] }}"><br><br>
+        
+        <label for="D6_nom" data-translate-key="detector_6_name">Nom Détecteur 6:</label>
+        <input type="text" id="D6_nom" name="D6_nom" value="{{ params['D6_nom'] }}"><br><br>
+        
+        <label for="D7_nom" data-translate-key="detector_7_name">Nom Détecteur 7:</label>
+        <input type="text" id="D7_nom" name="D7_nom" value="{{ params['D7_nom'] }}"><br><br>
+        
+        <label for="D8_nom" data-translate-key="detector_8_name">Nom Détecteur 8:</label>
+        <input type="text" id="D8_nom" name="D8_nom" value="{{ params['D8_nom'] }}"><br><br>
+        
+        <label for="D9_nom" data-translate-key="detector_9_name">Nom Détecteur 9:</label>
+        <input type="text" id="D9_nom" name="D9_nom" value="{{ params['D9_nom'] }}"><br><br>
+        
+        <label for="D10_nom" data-translate-key="detector_10_name">Nom Détecteur 10:</label>
+        <input type="text" id="D10_nom" name="D10_nom" value="{{ params['D10_nom'] }}"><br><br>
+        
+        <label for="D11_nom" data-translate-key="detector_11_name">Nom Détecteur 11:</label>
+        <input type="text" id="D11_nom" name="D11_nom" value="{{ params['D11_nom'] }}"><br><br>
+        
+        <label for="D12_nom" data-translate-key="detector_12_name">Nom Détecteur 12:</label>
+        <input type="text" id="D12_nom" name="D12_nom" value="{{ params['D12_nom'] }}"><br><br>
+        
+        <input type="submit" value="Sauvegarder" class="submit-button" data-translate-key="save_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+</body>
+</html>

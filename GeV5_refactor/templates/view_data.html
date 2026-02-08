@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="data_visualization_title">Visualisation des Données</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+    <script src="static/js/jquery.js"></script>
+    <style>
+        /* Style pour l'animation de chargement */
+        #loading {
+            display: none;
+            font-size: 1.5em;
+            color: #003399;
+            text-align: center;
+        }
+        /* Style pour le message d'erreur */
+        #error-message {
+            color: red;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2 data-translate-key="data_visualization_title">Visualisation des Données</h2>
+    {% if error_message %}
+    <div class="error">{{ error_message }}</div>
+    {% elif not col_names %}
+    <div class="info">Aucune donnée à afficher.</div>
+    {% endif %}
+    
+    <!-- Formulaire pour les filtres -->
+    <form id="filter-form" method="post" action="{{ url_for('export_csv') }}">
+        <div class="form-group">
+            <label for="start_date" data-translate-key="start_date">Date de début :</label>
+            <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date" data-translate-key="end_date">Date de fin :</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+        <div class="form-group">
+            <label for="filter_alarms" data-translate-key="filter_alarms">Afficher uniquement les lignes avec des alarmes :</label>
+            <input type="checkbox" id="filter_alarms" name="filter_alarms">
+        </div>
+        <div class="form-group">
+            <!-- Ajout du data-translate-key et de la classe CSS pour le bouton Rafraîchir -->
+            <button type="button" id="refresh-button" class="submit-button refresh-button" data-translate-key="refresh_button">Rafraîchir les données</button>
+            <button type="submit" id="export_csv" class="submit-button" data-translate-key="export_csv">Exporter en CSV</button>
+            <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+        </div>
+    </form>
+
+    <!-- Message d'erreur -->
+    <div id="error-message"></div>
+
+    <!-- Animation de chargement -->
+    <div id="loading">Chargement des données...</div>
+
+    <!-- Table pour afficher les données -->
+    <div class="table-container">
+        <table border="1" cellspacing="0" cellpadding="5">
+            <thead>
+                <tr style="background-color: #003399; color: white;">
+                    <!-- Colonne d'en-têtes définies initialement ici -->
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Les lignes seront insérées ici dynamiquement -->
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <!-- JavaScript pour gérer l'action de rafraîchissement -->
+    <script>
+        $(document).ready(function() {
+            console.log('DOM est prêt');
+
+            // Mémoriser les filtres pour éviter les requêtes redondantes
+            var lastFormData = '';
+
+            $('#refresh-button').click(function() {
+                console.log('Bouton rafraîchir cliqué');
+                
+                var formData = $('#filter-form').serialize();
+                
+                // Si les filtres n'ont pas changé, ne pas envoyer la requête
+                if (formData === lastFormData) {
+                    console.log('Les filtres n\'ont pas changé, pas de nouvelle requête.');
+                    return;
+                }
+                lastFormData = formData;  // Mémoriser les filtres actuels
+                
+                // Afficher l'animation de chargement
+                $('#loading').show();
+                $('#error-message').hide();  // Masquer les erreurs précédentes
+
+                // Envoyer une requête AJAX pour rafraîchir les données
+                $.ajax({
+                    url: "{{ url_for('export_csv') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        console.log('Réponse CSV reçue :', response);
+
+                        // Cacher l'animation de chargement
+                        $('#loading').hide();
+
+                        // Vérifier si la réponse est bien du CSV
+                        if (!response || response.trim() === '') {
+                            $('#error-message').text('Aucune donnée disponible pour cette période.').show();
+                            return;
+                        }
+
+                        // Traitement du CSV pour le convertir en tableau HTML
+                        var lines = response.split('\n');
+                        var tableHead = '';
+                        var tableRows = '';
+
+                        // Première ligne pour les en-têtes
+                        var headers = lines[0].split(',');
+                        tableHead += '<tr>';
+                        headers.forEach(function(header) {
+                            tableHead += '<th>' + header.trim() + '</th>';
+                        });
+                        tableHead += '</tr>';
+
+                        // Traiter les lignes suivantes (données)
+                        lines.slice(1).forEach(function(line) {
+                            if (line.trim() !== '') {  // Ignorer les lignes vides
+                                var cells = line.split(',');
+                                tableRows += '<tr>';
+                                cells.forEach(function(cell) {
+                                    tableRows += '<td>' + (cell.trim() || '-') + '</td>';  // Utiliser '-' si la cellule est vide
+                                });
+                                tableRows += '</tr>';
+                            }
+                        });
+
+                        // Injecter les en-têtes et les lignes dans le tableau
+                        $('thead').html(tableHead);  // Injecter les en-têtes
+                        $('#table-body').html(tableRows);  // Injecter les lignes de données
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Erreur lors de l\'exportation et du rafraîchissement des données:', status, error);
+                        $('#loading').hide();  // Cacher l'animation de chargement
+                        $('#error-message').text('Erreur lors de l\'exportation et du rafraîchissement des données.').show();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title data-translate-key="manage_users_title">Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+</head>
+<body>
+    <h2 data-translate-key="manage_users_title">Gestion des Utilisateurs</h2>
+    <h3 data-translate-key="add_user">Ajouter un utilisateur</h3>
+    <form action="{{ url_for('manage_users') }}" method="post">
+        <input type="hidden" name="add_user" value="1">
+        <div>
+            <label for="username" data-translate-key="username">Nom d'utilisateur:</label>
+            <input type="text" id="username" name="username" required><br><br>
+        </div>
+        <div>
+            <label for="password" data-translate-key="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" required><br><br>
+        </div>
+        <div>
+            <label for="access_level" data-translate-key="access_level">Niveau d'accès:</label>
+            <select id="access_level" name="access_level">
+                <option value="1" data-translate-key="user">Utilisateur</option>
+                <option value="2" data-translate-key="admin">Administrateur</option>
+            </select><br><br>
+        </div>
+        <input type="submit" value="Ajouter" class="submit-button" data-translate-key="add_button">
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </form>
+
+    <h3 data-translate-key="existing_users">Utilisateurs existants</h3>
+    <ul>
+        {% for user in users %}
+            <li>
+                {{ user[1] }} (Niveau d'accès: {{ user[2] }})
+                <form action="{{ url_for('manage_users') }}" method="post" style="display:inline;">
+                    <input type="hidden" name="delete_user" value="1">
+                    <input type="hidden" name="user_id" value="{{ user[0] }}">
+                    <input type="submit" value="Supprimer" data-translate-key="delete_button">
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

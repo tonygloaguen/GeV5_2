@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Attendre 10 secondes avant de lancer Chromium
+sleep 10
+
+# S'assurer que l'environnement graphique est défini
+export DISPLAchromium-browser --no-sandbox --kiosk http://127.0.0.1:5002/data/channels 2>> />
+Y=:0
+
+# Lancer Chromium en mode kiosque et rediriger les erreurs dans un fichier de log
+chromium-browser --no-sandbox --kiosk http://127.0.0.1:5002/data/channels 2>> /home/pi/chromium_errors.log
+
+# Vérifier si Chromium a bien démarré
+if [ $? -eq 0 ]; then
+    echo "Chromium lancé avec succès."
+else
+    echo "Échec du lancement de Chromium. Voir chromium_errors.log pour les détails."
+fi

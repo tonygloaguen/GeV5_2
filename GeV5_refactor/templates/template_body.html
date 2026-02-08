@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GammaScan eV5 - {{ nom_portique }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chartjs-adapter-moment.min.js') }}"></script>
+    <style>
+        body {
+            overflow-y: auto; /* Permettre le défilement vertical */
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="dropdown">
+            <button class="dropbtn">Paramètres 
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('general_params') }}">Paramètres Généraux</a>
+                <a href="{{ url_for('voies_params') }}">Paramètres des Voies</a>
+                <a href="{{ url_for('remote_params') }}">Paramètres du Remote</a>
+                <a href="{{ url_for('camera_params') }}">Paramètres Caméra</a>
+                <a href="{{ url_for('email_params') }}">Paramètres Email</a>
+                <a href="{{ url_for('sms_params') }}">Paramètres SMS</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Paramètres Avancés 
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('manage_users') }}">Gestion des Utilisateurs</a>
+                <a href="{{ url_for('voies_gpio_params') }}">Voies GPIO</a>
+                <a href="{{ url_for('mode_simulation') }}">Mode Simulation</a>
+                <a href="{{ url_for('network') }}">Réglage Réseau</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Utilitaires
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('view_data') }}">Visualisation des données de passage</a>
+                <a href="{{ url_for('start_anydesk') }}">Lancer AnyDesk</a>
+            </div>
+        </div>
+        <a href="{{ url_for('logout') }}">Déconnexion</a>
+        <button id="fullscreen-btn" class="fullscreen-btn">Plein Écran</button> 
+    </div>
+
+    <a href="https://www.berthold.com/fr-fr/societe/sur-berthold/berthold-france-sas/">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Berthold" class="logo">
+    </a>
+    <h2>GammaScan eV5 - {{ nom_portique }} - <span id="current-datetime">{{ current_datetime }}</span></h2>
+    <h2 id="controle-message" class="{{ 'red_e' if echeance < 30 else 'green_e' }}" style="background-color: transparent;">
+        Contrôle à effectuer dans {{ echeance }} jours
+    </h2>
+
+    <div class="container" style="display: flex;">
+        <div class="cube-container">
+            <div class="cube" id="cube">
+                <div class="face front">
+                    <div class="detector" id="detector-1"></div>
+                    <div class="detector" id="detector-2"></div>
+                    <div class="detector" id="detector-3"></div>
+                    <div class="detector" id="detector-4"></div>
+                </div>
+                <div class="face back">
+                    <div class="detector" id="detector-5"></div>
+                    <div class="detector" id="detector-6"></div>
+                    <div class="detector" id="detector-7"></div>
+                    <div class="detector" id="detector-8"></div>
+                </div>
+                <div class="face top">
+                    <div class="detector" id="detector-9"></div>
+                </div>
+                <div class="face bottom">
+                    <div class="detector" id="detector-10"></div>
+                </div>
+                <div class="face left">
+                    <span>Entrée contrôleur</span>
+                </div>
+                <div class="face right">
+                    <span>Sortie contrôleur</span>
+                </div>
+                <img src="{{ url_for('static', filename='personnage.png') }}" alt="Personnage" class="personnage" id="personnage">
+            </div>
+        </div>
+
+        <div class="table-container" id="alarme-defaut-container">
+            <h3>Alarme et Défaut</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="channel">Channel</th>
+                        <th class="alarme">Alarme</th>
+                        <th class="presence-source">Présence Source Autour</th>
+                        <th class="defaut">Défaut</th>
+                    </tr>
+                </thead>
+                <tbody id="alarm-defaut-table-body">
+                    {% for channel in channels %}
+                    <tr>
+                        <td class="channel">{{ channel.channel }}</td>
+                        <td class="alarme"><span class="led led-off"></span></td>
+                        <td class="presence-source"><span class="led led-off"></span></td>
+                        <td class="defaut"><span class="led led-off"></span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="table-container" id="graph-container">
+            <h3>Graphique en Temps Réel</h3>
+            <canvas id="realtime-chart"></canvas>
+        </div>
+    </div>
+
+    <audio id="alert-sound-alarme" src="{{ url_for('static', filename='alert_alarme.mp3') }}" preload="auto" loop></audio>
+    <audio id="alert-sound-point-chaud" src="{{ url_for('static', filename='alert_point_chaud.mp3') }}" preload="auto" loop></audio>
+    <audio id="alert-sound-defaut" src="{{ url_for('static', filename='alert_defaut.mp3') }}" preload="auto" loop></audio>
+
+    <div id="notification">Cellules ouvertes depuis 20 minutes et acquittable</div>
+    <div id="disk-space-notification"></div>
+
+    <script>
+        let alertSoundAlarme = document.getElementById('alert-sound-alarme');
+        let alertSoundPointChaud = document.getElementById('alert-sound-point-chaud');
+        let alertSoundDefaut = document.getElementById('alert-sound-defaut');
+
+        window.addEventListener('load', () => {
+            alertSoundAlarme.play().catch((error) => console.error('Error playing alert-sound-alarme:', error));
+            alertSoundPointChaud.play().catch((error) => console.error('Error playing alert-sound-point-chaud:', error));
+            alertSoundDefaut.play().catch((error) => console.error('Error playing alert-sound-defaut:', error));
+        });
+
+        function playSound(audioElement, shouldPlay) {
+            if (shouldPlay) {
+                audioElement.play().then(() => {
+                    console.log(`${audioElement.id} is playing`);
+                }).catch((error) => {
+                    console.error(`Error playing ${audioElement.id}:`, error);
+                });
+            } else {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+            }
+        }
+
+        function checkNotifications() {
+            fetch('/get_notifications')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cell_open_notification) {
+                        showNotification('notification');
+                    }
+                    if (data.low_disk_space_notification) {
+                        showNotification('disk-space-notification', data.low_disk_space_notification);
+                    }
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+
+        function showNotification(elementId, message = '') {
+            const notification = document.getElementById(elementId);
+            if (message) {
+                notification.textContent = message;
+            }
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 10000); // La notification disparaîtra après 10 secondes
+        }
+
+        setInterval(checkNotifications, 10000);
+        checkNotifications(); // Vérifiez immédiatement lors du chargement de la page
+
+        const ctx = document.getElementById('realtime-chart').getContext('2d');
+        const realtimeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                scales: {
+                    x: { type: 'time', time: { unit: 'second' }, adapters: { date: 'date-fns' } },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        let previousTimestamps = [];
+        let previousData = [];
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-datetime').innerText = data.datetime;
+
+                    // Mise à jour des détecteurs du cube
+                    for (let i = 0; i < 10; i++) {
+                        const detectorElement = document.getElementById(`detector-${i + 1}`);
+                        const value = data.comptage[i];
+                        const alarm = data.alarm[i];
+                        detectorElement.textContent = `${data.names[i]}: ${value} Bq`;
+                        detectorElement.className = `detector ${getAlarmClass(alarm)}`;
+                    }
+
+                    // Vérification de l'état mesure pour afficher/masquer le personnage
+                    const etatMesure = data.etatMesure;
+                    const personnage = document.getElementById('personnage');
+                    if (data.mesure.includes(1)) {
+                        personnage.style.display = 'block';
+                    } else {
+                        personnage.style.display = 'none';
+                    }
+
+                    let alarmDefautTableBody = document.getElementById('alarm-defaut-table-body');
+                    alarmDefautTableBody.innerHTML = '';
+                    let playAlertAlarme = false;
+                    let playAlertPointChaud = false;
+                    let playAlertDefaut = false;
+
+                    data.alarm.forEach((value, index) => {
+                        if (data.comptage[index] !== -1) {
+                            let alarmClass = value === 0 ? 'led-green' : (value === 1 ? 'led-orange' : 'led-red');
+                            if (value === 1 || value === 2) {
+                                playAlertAlarme = true;
+                            }
+                            let defautClass = data.defaut[index] === 0 ? 'led-green' : (data.defaut[index] === 1 ? 'led-orange' : 'led-red');
+                            if (data.defaut[index] === 1 || data.defaut[index] === 2) {
+                                playAlertDefaut = true;
+                            }
+                            let presenceSourceClass = data.etat_point_chaud[index] === 0 ? 'led-green' : 'led-orange';
+                            if (data.etat_point_chaud[index] === 1) {
+                                playAlertPointChaud = true;
+                            }
+                            let row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="channel">${data.names[index]}</td>
+                                <td class="alarme"><span class="led ${alarmClass}"></span></td>
+                                <td class="presence-source"><span class="led ${presenceSourceClass}"></span></td>
+                                <td class="defaut"><span class="led ${defautClass}"></span></td>
+                            `;
+                            alarmDefautTableBody.appendChild(row);
+                        }
+                    });
+
+                    playSound(alertSoundAlarme, playAlertAlarme);
+                    playSound(alertSoundPointChaud, playAlertPointChaud);
+                    playSound(alertSoundDefaut, playAlertDefaut);
+
+                    // Compare new data timestamps with previous ones and only update if different
+                    if (JSON.stringify(data.timestamps) !== JSON.stringify(previousTimestamps)) {
+                        const labels = data.timestamps;
+                        const datasets = data.names.map((name, index) => {
+                            if (data[`compteur_${index + 1}`].some(val => val >= 0)) {
+                                return {
+                                    label: name,
+                                    data: data[`compteur_${index + 1}`].map((val, i) => ({
+                                        x: labels[i],
+                                        y: val >= 0 ? val : null
+                                    })),
+                                    borderColor: ['red', 'blue', 'green', 'purple'][index % 4],
+                                    fill: false
+                                };
+                            }
+                            return null;
+                        }).filter(dataset => dataset !== null);
+
+                        realtimeChart.data.labels = labels;
+                        realtimeChart.data.datasets = datasets;
+                        realtimeChart.update(); // Mise à jour du graphique
+
+                        // Update previous timestamps and data for the next comparison
+                        previousTimestamps = data.timestamps;
+                        previousData = data;
+                    }
+
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        setInterval(fetchData, 300);
+        fetchData();
+
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const doc = document.documentElement;
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                doc.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        });
+
+        // Interaction du cube
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: -20, y: 20 };
+
+        const cube = document.getElementById('cube');
+
+        cube.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                rotation.y += deltaX * 0.1;
+                rotation.x -= deltaY * 0.1;
+                cube.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        window.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        window.addEventListener('touchstart', function(e) {
+            isDragging = true;
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        window.addEventListener('touchmove', function(e) {
+            if (isDragging) {
+                const deltaX = e.touches[0].clientX - previousMousePosition.x;
+                const deltaY = e.touches[0].clientY - previousMousePosition.y;
+                rotation.y += deltaX * 0.1;
+                rotation.x -= deltaY * 0.1;
+                cube.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        });
+
+        window.addEventListener('touchend', function() {
+            isDragging = false;
+        });
+
+        function getAlarmClass(alarm) {
+            switch (alarm) {
+                case 0:
+                    return 'green';
+                case 1:
+                    return 'orange';
+                case 2:
+                    return 'red';
+                default:
+                    return '';
+            }
+        }
+    </script>
+</body>
+</html>

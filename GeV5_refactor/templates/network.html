@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="network_settings_title">Configuration Réseau</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script> <!-- Inclusion du script de langue -->
+
+</head>
+<body>
+    <h1 data-translate-key="network_settings_title">Configuration Réseau</h1>
+    <div class="container">
+        <div class="form-container">
+            <h2 data-translate-key="configure_static_ip">Configurer une adresse IP statique</h2>
+            <form action="{{ url_for('set_static_ip') }}" method="POST">
+                <label for="interface" data-translate-key="interface">Interface:</label>
+                <select id="interface" name="interface" required>
+                    {% for interface in interfaces %}
+                    <option value="{{ interface }}">{{ interface }}</option>
+                    {% endfor %}
+                </select>
+                <label for="ip_address" data-translate-key="ip_address">Adresse IP:</label>
+                <input type="text" id="ip_address" name="ip_address" required>
+                <label for="netmask" data-translate-key="netmask">Masque de sous-réseau:</label>
+                <input type="text" id="netmask" name="netmask" required>
+                <label for="gateway" data-translate-key="gateway">Passerelle:</label>
+                <input type="text" id="gateway" name="gateway" required>
+                <button type="submit" class="submit-button" data-translate-key="configure_static_ip_button">Configurer IP statique</button>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2 data-translate-key="configure_dhcp">Configurer l'interface pour utiliser DHCP</h2>
+            <form action="{{ url_for('set_dhcp') }}" method="POST">
+                <label for="interface" data-translate-key="interface">Interface:</label>
+                <select id="interface" name="interface" required>
+                    {% for interface in interfaces %}
+                    <option value="{{ interface }}">{{ interface }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="submit-button" data-translate-key="configure_dhcp_button">Configurer DHCP</button>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2 data-translate-key="configure_dns">Configurer les serveurs DNS</h2>
+            <form action="{{ url_for('set_dns') }}" method="POST">
+                <label for="dns_servers" data-translate-key="dns_servers">Serveurs DNS (séparés par des virgules):</label>
+                <input type="text" id="dns_servers" name="dns_servers" required>
+                <button type="submit" class="submit-button" data-translate-key="configure_dns_button">Configurer DNS</button>
+            </form>
+        </div>
+        <a href="javascript:history.back()" class="back-button" data-translate-key="back_button">Retour</a>
+    </div>
+    {% if message %}
+    <div class="message">{{ message }}</div>
+    {% endif %}
+</body>
+</html>

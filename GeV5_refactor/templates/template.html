@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GammaScan eV5 - {{ nom_portique }}</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Scripts en defer : exécutés après parse du DOM -->
+  <script src="{{ url_for('static', filename='js/chart.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/moment.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/chartjs-adapter-moment.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/lang.js') }}" defer></script>
+</head>
+<body>
+  <div class="navbar">
+    <div class="dropdown">
+      <button class="dropbtn" data-translate-key="settings">Paramètres <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('general_params') }}" data-translate-key="general_settings">Paramètres Généraux</a>
+        <a href="{{ url_for('voies_params') }}" data-translate-key="lanes_settings">Paramètres des Voies</a>
+        <a href="{{ url_for('remote_params') }}" data-translate-key="remote_settings">Paramètres du Remote</a>
+        <a href="{{ url_for('camera_params') }}" data-translate-key="camera_settings">Paramètres Caméra</a>
+        <a href="{{ url_for('email_params') }}" data-translate-key="email_settings">Paramètres Email</a>
+        <a href="{{ url_for('sms_params') }}" data-translate-key="sms_settings">Paramètres SMS</a>
+        <a href="{{ url_for('communication_params') }}" data-translate-key="communication_settings"><br>Paramètres de Communication</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-translate-key="advanced_settings">Paramètres Avancés <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('manage_users') }}" data-translate-key="manage_users">Gestion des Utilisateurs</a>
+        <a href="{{ url_for('voies_gpio_params') }}" data-translate-key="lanes_gpio">Voies GPIO</a>
+        <a href="{{ url_for('mode_simulation') }}" data-translate-key="simulation_mode">Mode Simulation</a>
+        <a href="{{ url_for('network') }}" data-translate-key="network_settings">Réglage Réseau</a>
+        <a href="{{ url_for('maj_ntp') }}" data-translate-key="maj_ntp">MAJ du Serveur NTP</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-translate-key="utilities">Utilitaires <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('view_data') }}" data-translate-key="view_data">Visualisation des données de passage</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-translate-key="misc">Misc <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('start_anydesk') }}" data-translate-key="start_rustdesk">Lancer Remote Ctrl via Internet</a>
+        <a href="{{ url_for('test_smtp') }}" data-translate-key="test_smtp">Test SMTP</a>
+        <a href="{{ url_for('test_io') }}" data-translate-key="tests_io">Tests IO</a>
+        <a href="{{ url_for('control_camera') }}" data-translate-key="control_camera" onclick="openControlCameraWindow(event)">Contrôle caméra</a>
+        <a href="{{ url_for('restart_gev5_moteur') }}" data-translate-key="restart_portico">Redémarrage du Portique</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-translate-key="language">Language <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-content">
+        <a href="#" onclick="changeLanguage('fr')">Français</a>
+        <a href="#" onclick="changeLanguage('en')">English</a>
+        <a href="#" onclick="changeLanguage('es')">Español</a>
+        <a href="#" onclick="changeLanguage('pt')">Portugués</a>
+      </div>
+    </div>
+    <a href="{{ url_for('logout') }}" data-translate-key="logout">Déconnexion</a>
+
+    <div class="version-display">
+      <span>GammaScan eV5 - {{ nom_portique }} Version: {{ version }} - <span id="current-datetime">{{ current_datetime }}</span></span>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height:40px;margin-right:10px;">
+    <h2 id="controle-message" class="{{ 'text-red' if echeance < 30 else 'text-green' }}" data-translate-key="control_message">Nombre de jours avant le contrôle</h2>
+    <h2 id="controle-message_2" class="{{ 'text-red' if echeance < 30 else 'text-green' }}" style="margin-left:10px;">{{ echeance }}</h2>
+  </div>
+
+  <div class="container">
+    <div class="table-container">
+      <h3 data-translate-key="values_alarms">Valeurs et Alarmes/Défauts</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="channel" data-translate-key="channel">Channel</th>
+            <th class="valeur" data-translate-key="count">Comptage</th>
+            {% if mode_sans_cellules == 0 %}<th class="valeur" data-translate-key="follower">Suiveur</th>{% endif %}
+            <th class="valeur" data-translate-key="max_value">Valeur Max</th>
+            <th class="alarme" data-translate-key="alarm">Alarme</th>
+            <th class="presence-source" data-translate-key="source_presence">LD atteinte</th>
+            <th class="defaut" data-translate-key="fault">Défaut</th>
+          </tr>
+        </thead>
+        <tbody id="values-table-body">
+          {% for channel in channels %}
+          <tr>
+            <td class="channel">{{ channel.channel }}</td>
+            <td class="valeur">{{ channel.comptage }} cps</td>
+            {% if mode_sans_cellules == 0 %}<td class="valeur">{{ channel.suiveur|float|round|int }} cps</td>{% endif %}
+            <td class="valeur">{{ channel.val_max }} cps</td>
+            <td class="alarme"><span class="led led-off"></span></td>
+            <td class="presence-source"><span class="led led-off"></span></td>
+            <td class="defaut"><span class="led led-off"></span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="table-container table-cellules">
+      <h3 data-translate-key="measure_state">Etat mesure</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="etat-passage" data-translate-key="passage_state">État de passage</th>
+            <th class="vitesse" data-translate-key="speed">Vitesse</th>
+            <th class="etat-mesure" data-translate-key="measure_state">Etat Mesure</th>
+          </tr>
+        </thead>
+        <tbody id="cellules-table-body">
+          {% if mode_sans_cellules == 1 %}
+          <tr><td class="cellule" colspan="3" data-translate-key="mode_no_cells">Mode Sans Cellules</td></tr>
+          {% else %}
+          <tr>
+            <td class="etat-passage"><span id="etat-passage-led" class="led led-off"></span></td>
+            <td class="vitesse" id="vitesse">{{ vitesse_1 }} km/h ({{ vitesse_10 }})</td>
+            <td class="etat-mesure"><span id="etat-mesure" class="led led-off"></span></td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-container" id="graph-container">
+      <h3 data-translate-key="realtime_graph">Graphique en Temps Réel</h3>
+      <canvas id="realtime-chart"></canvas>
+    </div>
+  </div>
+
+  <audio id="alert-sound-alarme" src="{{ url_for('static', filename='alert_alarme.mp3') }}" preload="auto" loop></audio>
+  <!-- orthographe historique conservée, le JS tolérera les deux -->
+  <audio id="alert-sound-point_chau" src="{{ url_for('static', filename='alert_point_chaud.mp3') }}" preload="auto" loop></audio>
+  <audio id="alert-sound-defaut" src="{{ url_for('static', filename='alert_defaut.mp3') }}" preload="auto" loop></audio>
+
+  <div id="notification" data-translate-key="cells_open_20_minutes">Cellules ouvertes depuis 15 minutes et acquittable</div>
+  <div id="disk-space-notification"></div>
+
+  <!-- Bannière fixe pilotée par /get_notifications -->
+  <div id="open-cells-banner" class="banner" style="display:none" data-translate-key="cell_fault_active">
+    Cellules ouvertes depuis trop longtemps
+  </div>
+
+  <!-- Modal alarme radiologique -->
+  <div id="alarmModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p data-translate-key="radioactive_alarm">Alarme radioactive. Veuillez dégager le chargement et acquitter l'alarme pour pouvoir fermer cette fenêtre</p>
+      <img src="{{ url_for('static', filename='picto_radio.png') }}" alt="Pictogramme" class="picto" id="radioPicto" style="cursor:pointer;" title="Cliquer pour acquitter l'alarme">
+      <button id="openPdfButton" class="btn-red" data-translate-key="open_waste_management_procedure">Ouvrir la procédure de gestion du déchêt</button>
+    </div>
+  </div>
+
+  <script defer>
+    // helpers safe (globaux pour les liens onclick)
+    function openControlCameraWindow(e){ if(e&&e.preventDefault) e.preventDefault(); window.open("{{ url_for('control_camera') }}","_blank","width=800,height=600"); }
+    function changeLanguage(language){ try{ localStorage.setItem('language', language); }catch(e){} location.reload(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Bouton fermeture IHM (ne plante pas s'il n'existe pas)
+      const closeBtn = document.getElementById('close-btn');
+      if (closeBtn){
+        closeBtn.addEventListener('click', () => {
+          const code = prompt("Entrez le code pour fermer l'application :");
+          if (code === "1022") { window.close(); } else { alert("Code incorrect. Action annulée."); }
+        });
+      }
+
+      // Sons (tolérant aux IDs)
+      const alertSoundAlarme = document.getElementById('alert-sound-alarme') || null;
+      const alertSoundPointChaud = document.getElementById('alert-sound-point_chau') || document.getElementById('alert-sound-point_chaud') || null;
+      let soundsActivated = false;
+      function activateSounds(){
+        if(!soundsActivated){
+          [alertSoundAlarme, alertSoundPointChaud].filter(Boolean).forEach(a=>{ try{ a.play().catch(()=>{}); a.pause(); }catch(e){} });
+          soundsActivated = true;
+        }
+      }
+      function playSound(audio, on){
+        if(!audio) return;
+        try{ if(on){ audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; } }catch(e){}
+      }
+
+      // Notifications
+      function showNotification(id, message=''){
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(message) el.textContent = message;
+        el.style.display = 'block';
+        setTimeout(()=>{ el.style.display='none'; }, 10000);
+      }
+      function checkNotifications(){
+        fetch('/get_notifications').then(r=>r.json()).then(data=>{
+          const ocb = document.getElementById('open-cells-banner');
+          if (ocb) ocb.style.display = data.cell_open_notification ? 'block' : 'none';
+          if (data.low_disk_space_notification) showNotification('disk-space-notification', data.low_disk_space_notification);
+        }).catch(()=>{});
+      }
+
+      // Graph
+      const canvas = document.getElementById('realtime-chart');
+      const ctx = canvas ? canvas.getContext('2d') : null;
+      const MAX_VALUES = 60;
+      const realtimeChart = ctx ? new Chart(ctx, {
+        type:'line',
+        data:{ labels:[], datasets:[] },
+        options:{
+          locale: 'fr-FR',
+          scales:{
+            x:{ type:'time', time:{ unit:'second' } },
+            y:{ beginAtZero:false, ticks:{ callback:(v)=>Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0}) } }
+          },
+          plugins:{
+            tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${Number(c.parsed.y).toLocaleString('fr-FR',{maximumFractionDigits:0})} cps` } }
+          }
+        }
+      }) : null;
+
+      let previousTimestamps = [];
+
+      function fetchData(){
+        fetch('/data').then(r=>r.json()).then(data=>{
+          const dt = document.getElementById('current-datetime');
+          if (dt) dt.innerText = data.datetime;
+
+          // table valeurs
+          const valuesTableBody = document.getElementById('values-table-body');
+          if (valuesTableBody) valuesTableBody.innerHTML = '';
+
+          let alarmTriggered = false;
+          (data.comptage || []).forEach((value, index)=>{
+            if (value !== -1){
+              const a  = Number((data.alarm||[])[index] || 0);
+              const pc = Number((data.etat_point_chaud||[])[index] || 0);
+              const df = Number((data.defaut||[])[index] || 0);
+
+              const compt = Math.round(Number(value || 0)).toLocaleString('fr-FR');
+              const suiv  = Math.round(Number((data.suiveur||[])[index] || 0)).toLocaleString('fr-FR');
+              const vmax  = Math.round(Number((data.val_max||[])[index] || 0)).toLocaleString('fr-FR');
+
+              if (valuesTableBody){
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td class="channel">${(data.names||[])[index] || ''}</td>
+                  <td class="valeur">${compt} cps</td>
+                  ${data.mode_sans_cellules == 0 ? `<td class="valeur">${suiv} cps</td>` : ''}
+                  <td class="valeur">${vmax} cps</td>
+                  <td class="alarme"><span class="led ${a === 0 ? 'led-green' : (a === 1 ? 'led-orange' : 'led-red')}"></span></td>
+                  <td class="presence-source"><span class="led ${pc === 0 ? 'led-green' : 'led-orange'}"></span></td>
+                  <td class="defaut"><span class="led ${df === 0 ? 'led-green' : (df === 1 ? 'led-orange' : 'led-red')}"></span></td>
+                `;
+                valuesTableBody.appendChild(row);
+              }
+              if (a === 1 || a === 2) alarmTriggered = true;  /* <-- JS correct */
+            }
+          });
+
+          // cellules / vitesse
+          const celluleBody = document.getElementById('cellules-table-body');
+          if (data.mode_sans_cellules == 1){
+            if (celluleBody) celluleBody.innerHTML = `<tr><td class="cellule" colspan="3" data-translate-key="mode_no_cells">Mode Sans Cellules</td></tr>`;
+            window.__cellsOccupied = false;
+          } else {
+            const cells = (data && data.cells) ? data.cells : {};
+            const c1 = Number((cells.cellule_1 !== undefined && cells.cellule_1 !== null) ? cells.cellule_1 : 1);
+            const c2 = Number((cells.cellule_2 !== undefined && cells.cellule_2 !== null) ? cells.cellule_2 : 1);
+            const occupied = (c1 !== 1 || c2 !== 1);
+            window.__cellsOccupied = occupied;
+
+            const hasFault = Array.isArray(data.defaut) && data.defaut.some(v => Number(v) === 1 || Number(v) === 2);
+            const ledPassage = document.getElementById('etat-passage-led');
+            if (ledPassage){
+              if (hasFault)       ledPassage.className = 'led led-orange';
+              else if (occupied)  ledPassage.className = 'led led-blue';
+              else                ledPassage.className = 'led led-green';
+            }
+            const vitesse = document.getElementById('vitesse');
+            if (vitesse) vitesse.innerText = `${data.vitesse_1} km/h (${data.vitesse_10})`;
+          }
+
+          // Etat mesure
+          const etatMesure = document.getElementById('etat-mesure');
+          if (etatMesure){
+            let cls = 'led-green';
+            if (Array.isArray(data.mesure) && data.mesure.includes(1)) cls = 'led-yellow';
+            else if (Array.isArray(data.mesure) && data.mesure.includes(2)) cls = 'led-red';
+            etatMesure.className = `led ${cls}`;
+          }
+
+          // Graph (MAJ si timestamps changent)
+          if (realtimeChart && JSON.stringify(data.timestamps||[]) !== JSON.stringify(previousTimestamps)){
+            const labels = (data.timestamps||[]).slice(-MAX_VALUES);
+            const datasets = (data.names||[]).map((name, index)=>{
+              const arr = data[`compteur_${index + 1}`];
+              if (arr && arr.some(val => Number(val) >= 0)){
+                return {
+                  label: name,
+                  data: arr.slice(-MAX_VALUES).map((val,i)=>({ x: labels[i], y: Number(val) >= 0 ? Number(val) : null })),
+                  borderColor: ['red','blue','green','purple'][index % 4],
+                  fill: false
+                };
+              }
+              return null;
+            }).filter(Boolean);
+            realtimeChart.data.labels = labels;
+            realtimeChart.data.datasets = datasets;
+            realtimeChart.update();
+            previousTimestamps = (data.timestamps||[]);
+          }
+
+          // Alarme & sons
+          if (alarmTriggered) { showAlarmModal(); } else { hideAlarmModal(); }
+          playSound(alertSoundAlarme, (data.alarm||[]).some(v => Number(v) === 1 || Number(v) === 2));
+          playSound(alertSoundPointChaud, (data.etat_point_chaud||[]).some(v => Number(v) === 1));
+        }).catch(err => console.error('Error fetching data:', err));
+      }
+
+      // Modal RADIO
+      function showAlarmModal(){
+        const modal = document.getElementById('alarmModal'); if(!modal) return;
+        modal.classList.add('open');
+        const closeModal = modal.querySelector('.close'); if (closeModal) closeModal.onclick = () => modal.classList.remove('open');
+        const picto = document.getElementById('radioPicto');
+        if (picto){
+          picto.onclick = (ev) => {
+            if (window.__cellsOccupied) { ev.preventDefault(); alert("Acquittement bloqué : véhicule encore détecté devant les cellules."); return false; }
+            const ok = window.confirm("Êtes-vous sûr de vouloir acquitter ?");
+            if (!ok) { ev.preventDefault(); return false; }
+            window.location.href = "/acquittement";
+          };
+        }
+        const openPdfButton = document.getElementById('openPdfButton');
+        if (openPdfButton){
+          openPdfButton.onclick = () => window.open('/static/Portique Berthold V5 Procédure.pdf','_blank','width=800,height=600,top=100,left=100,menubar=no,toolbar=no');
+        }
+        const handleClickOutside = (e)=>{ if(e.target===modal) modal.classList.remove('open'); };
+        window.addEventListener('click', handleClickOutside, { once:true });
+      }
+      function hideAlarmModal(){ const modal=document.getElementById('alarmModal'); if(modal) modal.classList.remove('open'); }
+
+      // Timers
+      setInterval(fetchData, 1000); fetchData();
+      setInterval(checkNotifications, 10000); checkNotifications();
+
+      // Plein écran (optionnel)
+      const fullscreenBtn = document.getElementById('fullscreen-btn');
+      const docEl = document.documentElement;
+      function toggleFullscreen(){ if(!document.fullscreenElement){ docEl.requestFullscreen().catch(e=>alert(`Erreur plein écran: ${e.message}`)); } else { document.exitFullscreen(); } }
+      activateSounds();
+      if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='f'||e.key==='F') toggleFullscreen(); });
+
+      // Auto-reload toutes les 4h
+      setInterval(()=>location.reload(), 4*60*60*1000);
+    });
+  </script>
+</body>
+</html>
