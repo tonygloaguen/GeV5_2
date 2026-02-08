@@ -33,7 +33,7 @@ Simulateur matériel UNIPI.
 
 ## 🗂️ Organisation du dépôt
 
-```text
+```
 GeV5/
 ├─ README.md
 ├─ .gitignore
@@ -41,11 +41,29 @@ GeV5/
 │  └─ workflows/
 │     └─ ci.yml
 ├─ GeV5_refactor/
-│  ├─ src/
-│  ├─ tests/
-│  ├─ requirements.txt
-│  └─ README.md
 └─ UNIPI Simul/
-   ├─ src/
-   ├─ tests/
-   └─ README.md
+```
+
+---
+
+## 🧪 Développement
+
+Chaque projet est **autonome** :
+- dépendances séparées
+- logique indépendante
+- tests propres
+
+### Exemple (GeV5_refactor)
+
+```bash
+cd GeV5_refactor
+python -m venv .venv
+source .venv/bin/activate  # ou .venv\Scripts\activate sous Windows
+pip install -r requirements.txt
+```
+
+---
+
+## 📐 Documentation technique
+
+Les diagrammes d’architecture, de séquence et de déploiement sont disponibles dans le dossier [`docs/`](docs/).
