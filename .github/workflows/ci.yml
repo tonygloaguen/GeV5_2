@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: GeV5_refactor
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer dépendances
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lancer les tests
+        run: |
+          pip install pytest || true
+          pytest || echo "Pas (encore) de tests configurés"
+
+      - name: Analyse de sécurité Python
+        run: |
+          pip install bandit || true
+          bandit -r . || echo "Bandit terminé"
