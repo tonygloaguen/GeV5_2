@@ -16,8 +16,8 @@ class InputWatcher(threading.Thread):
     """
     Watcher cellule 2 (S2).
 
-    - En mode NORMAL : à terme on lira l'entrée physique (UNIPI I4, etc.)
-    - En mode SIMULATION : on lit simulateur.Application.variable2[0]
+    - En mode NORMAL (sim=0) : lit Svr_Unipi_rec.Inp_4[1]
+    - En mode SIMULATION (sim=1) : lit simulateur.Application.variable2[0]
     """
 
     cellules: Dict[int, int] = {2: 0}
@@ -38,8 +38,12 @@ class InputWatcher(threading.Thread):
                 except Exception:
                     v = 0
             else:
-                # --- MODE NORMAL → TODO: lire l'entrée réelle UNIPI I4 ---
-                v = 0
+                # --- MODE NORMAL → lire Svr_Unipi_rec.Inp_4[1] ---
+                try:
+                    from gev5.hardware.Svr_Unipi import Svr_Unipi_rec
+                    v = int(Svr_Unipi_rec.Inp_4[1])
+                except Exception:
+                    v = 0
 
             InputWatcher.cellules[2] = 1 if v else 0
             time.sleep(0.02)

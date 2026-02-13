@@ -23,6 +23,7 @@ Hypothèses basées sur la V1 :
 from __future__ import annotations
 
 import threading
+import time
 from logging import Logger
 from typing import Dict, List, Callable
 
@@ -81,6 +82,12 @@ class Gev5System:
         self.acq_thread: threading.Thread | None = None
         self.vitesse_thread: threading.Thread | None = None
 
+        # Hardware threads (prod)
+        self.svr_unipi_thread = None
+        self.relais_thread = None
+        self.check_cell_thread = None
+        self.interface_thread = None
+
     # ------------------------------------------------------------------ #
     # Helpers de mapping
     # ------------------------------------------------------------------ #
@@ -135,6 +142,67 @@ class Gev5System:
         return {ch: passage_actif for ch in range(1, 13)}
 
     # ------------------------------------------------------------------ #
+    # Démarrage hardware (Svr_Unipi, Relais, Cellules, Interface)
+    # ------------------------------------------------------------------ #
+    def start_hardware(self) -> None:
+        """
+        Démarre les threads hardware nécessaires en mode prod (sim=0) :
+        - Svr_Unipi : poll REST des DI sur EVOK (:8080)
+        - Relais    : commande des RO via WebSocket EVOK (:8080)
+        - Check_open_cell : surveillance cellules ouvertes trop longtemps
+        - Interface : supervision (collecte états pour l'API web)
+
+        En mode sim=1, ces threads ne sont PAS démarrés (l'ancien
+        simulateur Tkinter gère tout).
+        """
+        if int(self.cfg.sim) == 1:
+            logger.info("Mode SIM=1 → hardware threads non démarrés")
+            return
+
+        # ── 1. Svr_Unipi (poll REST des DI) — DOIT démarrer en premier ──
+        try:
+            from ..hardware.Svr_Unipi import demarrage_Srv_Unipi
+            self.svr_unipi_thread = demarrage_Srv_Unipi()
+            logger.info("Svr_Unipi démarré (poll REST DI3/DI4/DI5)")
+        except Exception as e:
+            logger.error("Échec démarrage Svr_Unipi: %s", e)
+
+        # Laisser Svr_Unipi faire son warmup initial
+        time.sleep(1.0)
+
+        # ── 2. Relais (commande RO via WebSocket) ──
+        try:
+            from ..hardware.relais import Relais
+            self.relais_thread = Relais()
+            self.relais_thread.start()
+            self.threads.append(self.relais_thread)
+            logger.info("Relais démarré (commande RO via WebSocket)")
+        except Exception as e:
+            logger.error("Échec démarrage Relais: %s", e)
+
+        # ── 3. Check_open_cell (surveillance cellules bloquées) ──
+        try:
+            from ..hardware.Check_open_cell import etat_cellule_check
+            self.check_cell_thread = etat_cellule_check(
+                Mode_sans_cellules=int(self.cfg.mode_sans_cellules)
+            )
+            self.check_cell_thread.start()
+            self.threads.append(self.check_cell_thread)
+            logger.info("Check_open_cell démarré")
+        except Exception as e:
+            logger.error("Échec démarrage Check_open_cell: %s", e)
+
+        # ── 4. Interface (supervision pour l'API web) ──
+        try:
+            from ..hardware.interface import Interface
+            self.interface_thread = Interface()
+            self.interface_thread.start()
+            self.threads.append(self.interface_thread)
+            logger.info("Interface supervision démarrée")
+        except Exception as e:
+            logger.error("Échec démarrage Interface: %s", e)
+
+    # ------------------------------------------------------------------ #
     # Démarrage des familles "cœur temps réel"
     # ------------------------------------------------------------------ #
     def start_comptage(self) -> None:
@@ -142,7 +210,7 @@ class Gev5System:
         Démarre les 12 threads de comptage.
 
         - voies 1..4 : GPIO réels (PIN_1..PIN_4)
-        - voies 5..12: pour l’instant, pins=0 (intégration remote à venir)
+        - voies 5..12: pour l'instant, pins=0 (intégration remote à venir)
         """
         pins = self._build_pins()
         d_on = self._build_d_on_flags()
@@ -379,6 +447,10 @@ class Gev5System:
     def start_all(self) -> None:
         logger.info("Démarrage GeV5 (cœur voies + stockage V2 + rapport PDF)")
 
+        # ── Hardware (Svr_Unipi, Relais, Cellules, Interface) ──
+        # DOIT démarrer EN PREMIER pour que les DI soient disponibles
+        self.start_hardware()
+
         # Cœur temps réel
         self.start_comptage()
         self.start_defauts()
@@ -397,7 +469,7 @@ class Gev5System:
         self.start_vitesse()
 
         logger.info(
-            "Tous les threads GeV5 (voies + stockage V2 + rapport PDF + acquittement + vitesse) sont démarrés."
+            "Tous les threads GeV5 (hardware + voies + stockage V2 + rapport PDF + acquittement + vitesse) sont démarrés."
         )
 
 

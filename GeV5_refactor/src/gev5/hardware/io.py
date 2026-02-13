@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 """
-Abstraction matÃ©riel (DI/DO) pour GeV5.
+Abstraction matériel (DI/DO) pour GeV5.
 
 Objectif :
-- Ne plus accÃ©der directement Ã  Svr_Unipi ou au simulateur dans le cÅ“ur mÃ©tier.
+- Ne plus accéder directement à Svr_Unipi ou au simulateur dans le cœur métier.
 - Fournir une interface unique HardwarePort avec :
     - read_di(index) -> 0/1
     - write_do(index, value) -> None
 
-ImplÃ©mentations :
-- UnipiHardware : lit/Ã©crit sur Svr_Unipi.Svr_Unipi_rec
+Implémentations :
+- UnipiHardware : lit/écrit sur Svr_Unipi.Svr_Unipi_rec
 - SimHardware   : lit les infos depuis simulateur.Application
                   (variable1, variable2, acqui)
 """
@@ -20,17 +20,17 @@ from typing import Optional
 
 
 # --------------------------------------------------------------------------- #
-# Interface gÃ©nÃ©rique
+# Interface générique
 # --------------------------------------------------------------------------- #
 class HardwarePort(ABC):
-    """Interface d'abstraction des entrÃ©es/sorties matÃ©rielles."""
+    """Interface d'abstraction des entrées/sorties matérielles."""
 
     @abstractmethod
     def read_di(self, index: int) -> int:
         """
-        Lecture d'une entrÃ©e digitale (DI).
+        Lecture d'une entrée digitale (DI).
 
-        :param index: numÃ©ro logique de l'entrÃ©e (ex: 3, 4, 5)
+        :param index: numéro logique de l'entrée (ex: 3, 4, 5)
         :return: 0 ou 1
         """
         raise NotImplementedError
@@ -38,9 +38,9 @@ class HardwarePort(ABC):
     @abstractmethod
     def write_do(self, index: int, value: int) -> None:
         """
-        Ã‰criture sur une sortie digitale (DO).
+        Écriture sur une sortie digitale (DO).
 
-        :param index: numÃ©ro logique de la sortie
+        :param index: numéro logique de la sortie
         :param value: 0 ou 1
         """
         raise NotImplementedError
@@ -48,7 +48,7 @@ class HardwarePort(ABC):
     def read_cellule(self, idx: int) -> int:
         """
         Lecture logique des cellules passage.
-        idx=1 â†’ DI3, idx=2 â†’ DI4 (mapping historique).
+        idx=1 → DI3, idx=2 → DI4 (mapping historique).
         """
         if idx == 1:
             return self.read_di(3)
@@ -58,58 +58,57 @@ class HardwarePort(ABC):
 
 
 # --------------------------------------------------------------------------- #
-# ImplÃ©mentation Unipi (prod)
+# Implémentation Unipi (prod)
 # --------------------------------------------------------------------------- #
 class UnipiHardware(HardwarePort):
     """
     Adaptateur vers Svr_Unipi.Svr_Unipi_rec.
 
-    HypothÃ¨se basÃ©e sur la V1 (acquittement.py) :
-    - lecture DI : Svr_Unipi.Svr_Unipi_rec.Inp_X[1] âˆˆ {0,1}
-    - Ã©criture DO : Svr_Unipi.Svr_Unipi_rec.Out_X[1] = 0/1 (Ã  adapter si besoin)
-    - index = DI/DO logique (3,4,5â€¦)
-    - return = 0/1
-    - value = 0/1
+    Lit les attributs de classe Inp_3, Inp_4, Inp_5 qui sont
+    mis à jour en permanence par le thread REST de Svr_Unipi.
+
+    Mapping :
+    - DI3 → Svr_Unipi_rec.Inp_3[1]  (cellule S1)
+    - DI4 → Svr_Unipi_rec.Inp_4[1]  (cellule S2)
+    - DI5 → Svr_Unipi_rec.Inp_5[1]  (acquittement)
     """
 
     def __init__(self) -> None:
-        try:
-            import Svr_Unipi  # type: ignore
-            self._svr_unipi = Svr_Unipi
-        except Exception:
-            self._svr_unipi = None
+        self._rec_cls = None
+        self._ensure_rec()
 
-    def _safe_read_unipi_input(self, n: int, default: int = 0) -> int:
-        if self._svr_unipi is None:
-            return default
-        try:
-            rec = getattr(self._svr_unipi, "Svr_Unipi_rec")
-            val = getattr(rec, f"Inp_{n}")[1]
-            return int(val)
-        except Exception:
-            return default
-
-    def _safe_write_unipi_output(self, n: int, value: int) -> None:
-        if self._svr_unipi is None:
+    def _ensure_rec(self) -> None:
+        """Import paresseux de Svr_Unipi_rec (disponible après démarrage)."""
+        if self._rec_cls is not None:
             return
         try:
-            rec = getattr(self._svr_unipi, "Svr_Unipi_rec")
-            out = list(getattr(rec, f"Out_{n}"))
-            out[1] = 1 if value else 0
-            setattr(rec, f"Out_{n}", tuple(out))
+            from .Svr_Unipi import Svr_Unipi_rec
+            self._rec_cls = Svr_Unipi_rec
         except Exception:
-            # On ne casse jamais la boucle temps rÃ©el pour un problÃ¨me IO
-            return
+            self._rec_cls = None
 
     def read_di(self, index: int) -> int:
-        return self._safe_read_unipi_input(index, default=0)
+        """Lit une entrée digitale via les attributs de classe Svr_Unipi_rec."""
+        self._ensure_rec()
+        if self._rec_cls is None:
+            return 0
+        try:
+            attr = getattr(self._rec_cls, f"Inp_{index}", None)
+            if attr is not None and isinstance(attr, (list, tuple)):
+                return int(attr[1])
+        except Exception:
+            pass
+        return 0
 
     def write_do(self, index: int, value: int) -> None:
-        self._safe_write_unipi_output(index, value)
+        """Écriture DO — pas utilisé directement (relais.py gère via WS)."""
+        # Les sorties relais sont gérées par relais.py via WebSocket
+        # Ce hook est prévu pour une extension future si besoin
+        pass
 
 
 # --------------------------------------------------------------------------- #
-# ImplÃ©mentation Simulation (simulateur Tkinter)
+# Implémentation Simulation (simulateur Tkinter)
 # --------------------------------------------------------------------------- #
 class SimHardware(HardwarePort):
     """
@@ -129,9 +128,7 @@ class SimHardware(HardwarePort):
         if self._sim_app_cls is not None:
             return
         try:
-            # simulateur est dans src/gev5/core/simulation/simulateur.py
             from ..core.simulation import simulateur  # type: ignore
-
             self._sim_app_cls = getattr(simulateur, "Application", None)
         except Exception:
             self._sim_app_cls = None
@@ -139,7 +136,6 @@ class SimHardware(HardwarePort):
     def _read_sim_var(self, di_index: int) -> int:
         if self._sim_app_cls is None:
             return 0
-
         try:
             app = self._sim_app_cls
             if di_index == 3:
@@ -150,7 +146,6 @@ class SimHardware(HardwarePort):
                 return int(getattr(app, "acqui", {0: 0})[0])
         except Exception:
             return 0
-
         return 0
 
     def read_di(self, index: int) -> int:
@@ -158,11 +153,6 @@ class SimHardware(HardwarePort):
         return self._read_sim_var(index)
 
     def read_cellule(self, idx: int) -> int:
-        """
-        Lecture logique des cellules passage.
-        idx=1 â†’ S1 (DI3)
-        idx=2 â†’ S2 (DI4)
-        """
         if idx == 1:
             return self.read_di(3)
         if idx == 2:
@@ -170,7 +160,6 @@ class SimHardware(HardwarePort):
         return 0
 
     def write_do(self, index: int, value: int) -> None:
-        # No-op pour lâ€™instant en mode simu
         return
 
 
@@ -181,10 +170,8 @@ def create_hardware(sim: int) -> HardwarePort:
     """
     Factory simple :
 
-    - sim == 1 â†’ SimHardware (simulateur Tkinter)
-    - sim == 0 â†’ UnipiHardware (prod)
-
-    Ã€ utiliser par Gev5System / starter pour injecter le bon backend.
+    - sim == 1 → SimHardware (simulateur Tkinter)
+    - sim == 0 → UnipiHardware (prod / faux EVOK)
     """
     if int(sim) == 1:
         return SimHardware()
